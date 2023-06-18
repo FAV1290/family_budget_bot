@@ -16,5 +16,9 @@ __pycache__/
 *.log
 
 
-# Settings
-settings.py
+# Json files
+*.json
+
+
+# Test script
+test.py
