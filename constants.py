@@ -1,8 +1,23 @@
+import os
+import dotenv
+
+
+dotenv.load_dotenv(dotenv.find_dotenv())
+
+
+API_TOKEN = os.environ.get('API_TOKEN')
+FILEPATH = 'app_data.json'
 COMMANDS = {
-    '/add_cat' : '• /add_cat [Имя категории] :\nДобавить категорию расходов', 
-    '/add_cats' : '• /add_cats [Именя категорий через запятую] :\nДобавить сразу несколько категорий',
-    '/my_cats' : '• /my_cats : Вывести список категорий расходов', 
+    '/add_category' : '• /add_category [Имена категорий через запятую] :\nДобавить категории расходов', 
+    '/categories' : '• /categories : Список категорий расходов', 
     '/add' : '• /add [Сумма] [Комментарий - необязательно] :\nДобавить расход на заданную сумму',
-    '/expenses' : '• /expenses : Вывести список расходных операций',
-    '/help' : '• /help : Вывести перечень доступных команд',
+    '/expenses' : '• /expenses : Список расходных операций',
+    '/help' : '• /help : Перечень доступных команд',
 }
+DEFAULT_DATA_DICT = {
+    'expenses' : [],
+    'categories' : [],
+    'settings' : [],
+}
+MISCELLANEOUS_CATEGORY = 'разное'
+DEFAULT_CATEGORIES = [MISCELLANEOUS_CATEGORY]
