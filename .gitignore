@@ -7,5 +7,18 @@ ENV/
 env.bak/
 venv.bak/
 
-# Settings
-settings.py
+
+# Cache
+__pycache__/
+
+
+# Logs
+*.log
+
+
+# Json files
+*.json
+
+
+# Test script
+test.py
