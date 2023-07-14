@@ -1,6 +1,5 @@
 from db.database_init import db_session
 from db.database_models import Settings
-from apps.converters import convert_settings_object_to_dict
 
 
 def update_utc_offset(target_id, new_utc_offset):
@@ -39,4 +38,4 @@ def get_user_settings(target_id):
             is_app_configured = False,
             utc_offset = 0
         )
-    return convert_settings_object_to_dict(settings_object)
+    return settings_object

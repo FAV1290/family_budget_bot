@@ -2,8 +2,7 @@ from telegram.ext import (
     CommandHandler, CallbackQueryHandler, ConversationHandler, MessageHandler, Filters)
 from constants import COMMANDS
 from db.categories import save_new_category, change_category_limit
-from apps.categories import check_category_name, make_category_dict
-from apps.expenses import check_expense_amount
+from apps.categories import check_category_name, make_category_object, check_category_limit
 from bot.keyboards import make_true_false_question_buttons
 
 
@@ -19,16 +18,16 @@ def start_naming_stage(update, context):
     user_input = update.message.text.lower().strip()
     feedback = check_category_name(update.message.chat.id, user_input)
     if feedback == 'ok':
-        new_category = make_category_dict(update.message.chat.id, user_input)
+        new_category = make_category_object(update.message.chat.id, user_input)
         limit_markup = make_true_false_question_buttons()
         feedback = ''.join(
             [
-                f'Категория {new_category["name"].capitalize()} успешно добавлена.',
+                f'Категория {new_category.name.capitalize()} успешно добавлена.',
                 'Хотите установить для нее лимит расходов?',
             ]
         )
         save_new_category(new_category)
-        context.chat_data['category_id'] = str(new_category['category_id']) #А обратно?
+        context.chat_data['category_id'] = new_category.category_id
         update.message.reply_text(feedback, quote=False, reply_markup = limit_markup)
         return LIMIT_CHOICE
     else:
@@ -51,7 +50,7 @@ def start_limit_choice_stage(update, context):
 
 def start_limit_set_stage(update, context):
     target_id = context.chat_data['category_id']
-    feedback = check_expense_amount(update.message.text) #Cделать свою функцию для лимита?
+    feedback = check_category_limit(update.message.text) #Cделать свою функцию для лимита?
     if feedback == 'ok':
         new_limit = update.message.text
         change_category_limit(target_id, new_limit)

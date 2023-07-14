@@ -21,21 +21,21 @@ def start_amount_stage(update, context):
         update.message.reply_text(feedback, quote=False)
         return AMOUNT
     categories_markup = make_categories_buttons(update.message.chat.id)
-    context.chat_data['expense_id'] = str(expense['expense_id'])    #А обратно?
+    context.chat_data['expense_id'] = expense.expense_id
     feedback = 'Теперь выберите желаемую категорию:'
     update.message.reply_text(feedback, quote=False, reply_markup=categories_markup)
     return CATEGORY
 
 
 def start_category_stage(update, context):
-    target_id = context.chat_data['expense_id']
+    target_expense_id = context.chat_data['expense_id']
     target_category = update.callback_query.data
-    target_expense = get_expense_by_id(target_id)
+    target_expense = get_expense_by_id(target_expense_id)
     update.callback_query.answer()
-    change_expense_category(target_id, target_category)
+    change_expense_category(target_expense_id, target_category)
     feedback = ''.join(
         [
-            f'Новая расходная операция на сумму {target_expense["amount"]} рублей.',
+            f'Новая расходная операция на сумму {target_expense.amount} рублей.',
             f'\nРасход добавлен в категорию {target_category.title()}. ',
             'Желаете добавить к нему комментарий?'
         ]
@@ -52,9 +52,8 @@ def start_description_choice(update, context):
         update.callback_query.edit_message_text(
             'Хорошо, расход добавлен без комментария. Чтобы добавить еще один, введите /add')
         return ConversationHandler.END
-    else:
-        update.callback_query.edit_message_text('Хорошо, введите текст комментария:')
-        return DESCRIPTION_CHANGE
+    update.callback_query.edit_message_text('Хорошо, введите текст комментария:')
+    return DESCRIPTION_CHANGE
     
 
 def start_description_stage(update, context):

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, Boolean, String, DateTime, BigInteger
+from sqlalchemy import Column, Integer, Boolean, String, DateTime, BigInteger, UUID
 from db.database_init import Base, engine
 
 
@@ -12,7 +12,7 @@ class Settings(Base):
 class Category(Base):
     __tablename__ = 'categories'
     user_id = Column(BigInteger)
-    category_id = Column(String, primary_key=True)
+    category_id = Column(UUID, primary_key=True)
     name = Column(String)
     limit = Column(Integer)
 
@@ -20,7 +20,7 @@ class Category(Base):
 class Expense(Base):
     __tablename__ = 'expenses'
     user_id = Column(BigInteger)
-    expense_id = Column(String, primary_key=True)
+    expense_id = Column(UUID, primary_key=True)
     created_at = Column(DateTime)
     amount = Column(Integer)
     category = Column(String)

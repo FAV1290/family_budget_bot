@@ -7,8 +7,6 @@ def make_categories_buttons(user_id):
     categories = get_user_categories_names(user_id)
     button_list = []
     for category in categories:
-        #data_string = str(new_expense['expense_id']) + category
-        #button = InlineKeyboardButton(category.title(), callback_data = data_string)
         button = InlineKeyboardButton(category.title(), callback_data=category)
         button_list.append(button)
     reply_markup = InlineKeyboardMarkup(

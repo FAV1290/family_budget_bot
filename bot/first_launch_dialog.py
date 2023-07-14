@@ -1,5 +1,4 @@
 import datetime
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import (
     CommandHandler, CallbackQueryHandler, ConversationHandler, MessageHandler, Filters)
 from constants import COMMANDS
@@ -12,7 +11,7 @@ NOT_FIRST_LAUNCH, REGION, UTC_OFFSET, CATEGORIES = range(4)
    
 
 def start_greetings_stage(update, context):
-    config_status = get_user_settings(update.message.chat.id)['is_app_configured']
+    config_status = get_user_settings(update.message.chat.id).is_app_configured
     if config_status:
         bot_answer = ' '.join([
             'Привет! Если не ошибаюсь, мы с вами уже зафиксировали первоначальные настройки.',
@@ -48,7 +47,7 @@ def start_reinit_stage(update, context):
 
 def start_region_stage(update, context):
     region = update.callback_query.data
-    update.callback_query.answer('Всё с вами ясно!')
+    update.callback_query.answer()
     utc_question = ''.join(
         [
             'Теперь укажите отклонение времени от UTC в вашем регионе ',
@@ -60,7 +59,7 @@ def start_region_stage(update, context):
 
 def start_utc_offset_stage(update, context):
     offset = int(update.callback_query.data)
-    update.callback_query.answer('Настройка сохранена!')
+    update.callback_query.answer()
     estimated_date = (
         datetime.datetime.utcnow() + datetime.timedelta(hours=offset)).strftime('%d.%m.%y, %H:%M')
     bot_answer = [

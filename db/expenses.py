@@ -1,11 +1,9 @@
 from db.database_init import db_session
 from db.database_models import Expense
-from apps.converters import convert_expense_dict_to_object, convert_expense_object_to_dict
 
 
-def save_new_expense(expense):
-    new_expense_object = convert_expense_dict_to_object(expense)
-    db_session.add(new_expense_object)
+def save_new_expense(expense_object):
+    db_session.add(expense_object)
     db_session.commit()
 
 
@@ -25,13 +23,10 @@ def get_user_expenses(target_user_id):
     user_expenses = []
     user_expenses_object = Expense.query.filter(
         Expense.user_id == target_user_id).order_by(Expense.created_at)
-    for expense_object in user_expenses_object:
-        new_expense = convert_expense_object_to_dict(expense_object)
-        user_expenses.append(new_expense)
+    user_expenses = [expense_object for expense_object in user_expenses_object]
     return user_expenses
 
 
 def get_expense_by_id(target_expense_id):
     expense_object = Expense.query.filter(Expense.expense_id == target_expense_id).first()
-    target_expense = convert_expense_object_to_dict(expense_object)
-    return target_expense
+    return expense_object
