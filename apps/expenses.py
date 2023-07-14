@@ -1,10 +1,11 @@
 import datetime
 import uuid
 from constants import MISCELLANEOUS_CATEGORY_NAME
-from database_handlers import save_new_expense, get_user_expenses, get_user_settings
+from db.expenses import save_new_expense, get_user_expenses
+from db.settings import get_user_settings
 
 
-def check_expense_input(user_input):
+def check_expense_amount(user_input):
     feedback = 'ok'
     try:
         if int(user_input) <= 0:
@@ -28,7 +29,7 @@ def make_expense_dict(user_id, user_input):
 
 
 def add_expense(user_id, user_input):
-    feedback = check_expense_input(user_input)
+    feedback = check_expense_amount(user_input)
     if feedback != 'ok':
         return None, feedback
     new_expense = make_expense_dict(user_id, user_input)

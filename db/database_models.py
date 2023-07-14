@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, Boolean, String, DateTime, BigInteger
-from database_init import Base, engine
+from db.database_init import Base, engine
 
 
 class Settings(Base):
