@@ -1,71 +1,42 @@
 import datetime
 import uuid
-from constants import MISCELLANEOUS_CATEGORY
-from database_handlers import (
-save_new_expense, get_user_categories, get_user_expenses, get_user_utc_offset
-)
+from constants import MISCELLANEOUS_CATEGORY_NAME
+from database_handlers import save_new_expense, get_user_expenses, get_user_settings
 
 
 def check_expense_input(user_input):
-    user_input, feedback = user_input.split(), 'ok'
-    if len(user_input) == 1:
-        feedback = ''.join(
-            [
-                'Вы забыли указать сумму. Примеры правильного ввода:',
-                '\n"/add 100 мороженка" или "/add 500"',
-            ]
-        )
-        return feedback 
+    feedback = 'ok'
     try:
-        if int(user_input[1]) <= 0:
-            feedback = 'Вы указали некорректную сумму. Сумма расхода должна быть больше нуля'
+        if int(user_input) <= 0:
+            feedback = 'Сумма расхода должна быть больше нуля.'
     except ValueError:
         feedback = ''.join(
             [
                 'Задана некорректная сумма. Примеры правильного ввода:',
-                '\n"/add 100 мороженка" или "/add 500"',
+                '\n"/add 100 мороженка" или "/add 500".',
             ]
         )
     return feedback
 
 
-def make_expense(user_id, user_input):
-    user_categories = get_user_categories(user_id)
-    amount = user_input.split()[1]
-    if len(user_input.split()) == 2:
-        description = None
-    else:
-        description = user_input.partition(' ')[2][(len(amount) + 1):]
-    if description is not None and description.lower().strip() in user_categories:
-        category, description = description.lower().strip(), None
-    else:
-        category = MISCELLANEOUS_CATEGORY
+def make_expense_dict(user_id, user_input):
+    amount = int(user_input)
     expense = {
         'user_id' : user_id,
         'expense_id' : uuid.uuid4(),
         'created_at' : datetime.datetime.utcnow(),
         'amount' : amount,
-        'category' : category,
-        'description' : description,
+        'category' : MISCELLANEOUS_CATEGORY_NAME,
+        'description' : None,
     }
     return expense
-
-
-def get_new_expense_feedback(new_expense):
-    feedback = f"Новая расходная операция на сумму {new_expense['amount']} рублей\n"
-    if new_expense['description'] is not None:
-        feedback += f"Комментарий: {new_expense['description']}\n"
-    if new_expense['category'] != MISCELLANEOUS_CATEGORY:
-        feedback += f"Расход добавлен в категорию {new_expense['category'].title()}"
-    return feedback
 
 
 def add_expense(user_id, user_input):
     feedback = check_expense_input(user_input)
     if feedback != 'ok':
         return None, feedback
-    new_expense = make_expense(user_id, user_input)
-    feedback = get_new_expense_feedback(new_expense)
+    new_expense = make_expense_dict(user_id, user_input)
     save_new_expense(new_expense)
     return new_expense, feedback
 
@@ -73,7 +44,7 @@ def add_expense(user_id, user_input):
 def make_expenses_report(user_id):
     expenses_list = get_user_expenses(user_id)
     report = ''
-    utc_offset = datetime.timedelta(hours=get_user_utc_offset(user_id))
+    utc_offset = datetime.timedelta(hours=get_user_settings(user_id)['utc_offset'])
     for expense in expenses_list:
         formatted_created_at = (expense['created_at'] + utc_offset).strftime('%d.%m.%y, %H:%M')
         formatted_category = expense['category'].capitalize()

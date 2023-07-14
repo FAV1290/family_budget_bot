@@ -6,9 +6,7 @@ dotenv.load_dotenv(dotenv.find_dotenv())
 
 
 API_TOKEN = os.environ.get('API_TOKEN')
-DB_LOGIN = os.environ.get('DB_LOGIN')
-DB_PASSWORD = os.environ.get('DB_PASSWORD')
-DB_NAME = os.environ.get('DB_NAME')
+DB_HOST = os.environ.get('DB_HOST')
 REGIONS = [
     ('африка', 'africa'),
     ('европа', 'europe'),
@@ -28,11 +26,12 @@ UTC_OFFSETS_DIVISION = {
     'antarctica' : [-6, -3, 0, 2, 3, 5, 6, 7, 8, 10, 11, 12, 13],
 }
 COMMANDS = {
-    'add_category' : '• /add_category [Имена категорий через запятую] :\nДобавить категории расходов', 
-    'categories' : '• /categories : Список категорий расходов', 
-    'add' : '• /add [Сумма] [Комментарий - необязательно] :\nДобавить расход на заданную сумму',
-    'expenses' : '• /expenses : Список расходных операций',
-    'help' : '• /help : Перечень доступных команд',
+    'new_category' : '• /new_category - добавить категорию расходов', 
+    'categories' : '• /categories - список категорий расходов', 
+    'add' : '• /add - добавить расходную операцию',
+    'expenses' : '• /expenses -  список расходных операций',
+    'help' : '• /help - перечень доступных команд',
+    'start' : '• /start - запустить первоначальную настройку', 
 }
-MISCELLANEOUS_CATEGORY = 'разное'
-DEFAULT_CATEGORIES = [MISCELLANEOUS_CATEGORY]
+MISCELLANEOUS_CATEGORY_NAME = 'разное'
+DEFAULT_CATEGORIES_NAMES = [MISCELLANEOUS_CATEGORY_NAME]

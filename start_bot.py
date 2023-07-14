@@ -1,12 +1,13 @@
 import logging
 import datetime
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import Updater, CommandHandler, CallbackQueryHandler
-from constants import API_TOKEN, COMMANDS
-from categories import make_categories_report, add_category
+from telegram.ext import Updater, CommandHandler
+from constants import API_TOKEN, COMMANDS, MISCELLANEOUS_CATEGORY_NAME
+from categories import make_categories_report, add_category, get_user_categories_names
 from expenses import make_expenses_report, add_expense
 from first_launch import start_handler
-from database_handlers import change_expense_category, get_user_categories, get_expense_by_id
+from add_expense import add_expense_handler
+from database_handlers import change_expense_category, get_expense_by_id
 
 
 logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s',
@@ -27,7 +28,7 @@ def help_handler(update, context):
 
 
 def make_categories_buttons(user_id, new_expense):
-    categories = get_user_categories(user_id)
+    categories = get_user_categories_names(user_id)
     button_list = []
     for category in categories:
         data_string = str(new_expense['expense_id']) + category
@@ -41,7 +42,7 @@ def make_categories_buttons(user_id, new_expense):
 
 def expense_add_handler(update, context):
     expense, feedback = add_expense(update.message.chat.id, update.message.text)
-    if expense is None or expense['category'] != 'разное':
+    if expense is None or expense['category'] != MISCELLANEOUS_CATEGORY_NAME:
         reply_markup = None
     else:
         reply_markup = make_categories_buttons(update.message.chat.id, expense)
@@ -62,8 +63,8 @@ def set_expense_category(update, context):
 
 
 def add_category_handler(update, context):
-    categories_report = add_category(update.message.chat.id, update.message.text)
-    update.message.reply_text(categories_report, quote=False)
+    feedback = add_category(update.message.chat.id, update.message.text.partition(' ')[2])
+    update.message.reply_text(feedback, quote=False)
 
 
 def show_expenses_handler(update, context):
@@ -80,14 +81,10 @@ def main():
     ffbot = Updater(API_TOKEN, use_context=True)
     dp = ffbot.dispatcher
     dp.add_handler(start_handler())
+    dp.add_handler(add_expense_handler())
     dp.add_handler(CommandHandler('help', help_handler))    
-    dp.add_handler(CommandHandler('add', expense_add_handler))
-    try:
-        dp.add_handler(CallbackQueryHandler(set_expense_category))
-    except ValueError:
-        logging.info(f'Skipped some CallbackQuery to avoid ValueError')
-    dp.add_handler(CommandHandler('add_category', add_category_handler))
-    dp.add_handler(CommandHandler('categories', show_categories_handler))  
+    dp.add_handler(CommandHandler('new_category', add_category_handler))
+    dp.add_handler(CommandHandler('categories', show_categories_handler))
     dp.add_handler(CommandHandler('expenses', show_expenses_handler))
     logging.info(f'\n\n\n{datetime.datetime.now()}: Bot has started')
     ffbot.start_polling()

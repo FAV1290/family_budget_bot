@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, Boolean, ARRAY, String, DateTime, BigInteger
+from sqlalchemy import Column, Integer, Boolean, String, DateTime, BigInteger
 from database_init import Base, engine
 
 
@@ -9,10 +9,12 @@ class Settings(Base):
     utc_offset = Column(Integer)
 
 
-class Categories(Base):
+class Category(Base):
     __tablename__ = 'categories'
-    user_id = Column(BigInteger, primary_key=True)
-    user_categories = Column(ARRAY(String))
+    user_id = Column(BigInteger)
+    category_id = Column(String, primary_key=True)
+    name = Column(String)
+    limit = Column(Integer)
 
 
 class Expense(Base):
