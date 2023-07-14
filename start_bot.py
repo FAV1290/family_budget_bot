@@ -3,9 +3,10 @@ import datetime
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Updater, CommandHandler, CallbackQueryHandler
 from constants import API_TOKEN, COMMANDS
-from data_handlers import load_data, filter_user_data, get_expense_by_id
-from categories import show_categories, add_category
-from expenses import format_expenses_report, add_expense, update_expense
+from categories import make_categories_report, add_category
+from expenses import make_expenses_report, add_expense
+from first_launch import start_handler
+from database_handlers import change_expense_category, get_user_categories, get_expense_by_id
 
 
 logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s',
@@ -20,23 +21,21 @@ def get_command_descriptions():
     return commands_message
 
 
-def start_handler(update, context): 
-    update.message.reply_text('Привет! Я помогаю вести семейный бюджет! Вот список доступных команд:', quote=False)
-    update.message.reply_text(get_command_descriptions(), quote=False)
-
-
 def help_handler(update, context):
     update.message.reply_text('Вам доступны следующие команды:', quote=False)
     update.message.reply_text(get_command_descriptions(), quote=False)
 
 
 def make_categories_buttons(user_id, new_expense):
-    categories = filter_user_data(load_data(), user_id)['categories']
+    categories = get_user_categories(user_id)
     button_list = []
     for category in categories:
-        button = InlineKeyboardButton(category.title(), callback_data = str(new_expense['expense_id']) + category)
+        data_string = str(new_expense['expense_id']) + category
+        button = InlineKeyboardButton(category.title(), callback_data = data_string)
         button_list.append(button)
-    reply_markup = InlineKeyboardMarkup([button_list[index:index + 3] for index in range(0, len(button_list), 3)])
+    reply_markup = InlineKeyboardMarkup(
+        [button_list[index:index + 3] for index in range(0, len(button_list), 3)]
+    )
     return reply_markup
 
 
@@ -56,8 +55,8 @@ def set_expense_category(update, context):
     target_expense = get_expense_by_id(target_id)
     update.callback_query.answer('Отличный выбор!')
     target_expense['category'] = target_category
-    update_expense(target_expense)
-    feedback = f"Новая расходная операция на сумму {target_expense['sum']} рублей"
+    change_expense_category(target_id, target_category)
+    feedback = f"Новая расходная операция на сумму {target_expense['amount']} рублей"
     feedback += f"\nРасход добавлен в категорию {target_category.title()}"
     update.callback_query.edit_message_text(text=feedback)
 
@@ -68,22 +67,25 @@ def add_category_handler(update, context):
 
 
 def show_expenses_handler(update, context):
-    expenses_report = format_expenses_report(update.message.chat.id)
+    expenses_report = make_expenses_report(update.message.chat.id)
     update.message.reply_text(expenses_report, quote=False)
 
 
 def show_categories_handler(update, context):
-    categories_report = show_categories(update.message.chat.id)
+    categories_report = make_categories_report(update.message.chat.id)
     update.message.reply_text(categories_report, quote=False)
 
 
 def main():
     ffbot = Updater(API_TOKEN, use_context=True)
     dp = ffbot.dispatcher
-    dp.add_handler(CommandHandler('start', start_handler))
+    dp.add_handler(start_handler())
     dp.add_handler(CommandHandler('help', help_handler))    
     dp.add_handler(CommandHandler('add', expense_add_handler))
-    dp.add_handler(CallbackQueryHandler(set_expense_category))
+    try:
+        dp.add_handler(CallbackQueryHandler(set_expense_category))
+    except ValueError:
+        logging.info(f'Skipped some CallbackQuery to avoid ValueError')
     dp.add_handler(CommandHandler('add_category', add_category_handler))
     dp.add_handler(CommandHandler('categories', show_categories_handler))  
     dp.add_handler(CommandHandler('expenses', show_expenses_handler))

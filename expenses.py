@@ -1,28 +1,41 @@
 import datetime
 import uuid
 from constants import MISCELLANEOUS_CATEGORY
-from data_handlers import filter_user_data, load_data, save_data, find_index_by_id
+from database_handlers import (
+save_new_expense, get_user_categories, get_user_expenses, get_user_utc_offset
+)
 
 
-def check_expense_string(user_input):
+def check_expense_input(user_input):
     user_input, feedback = user_input.split(), 'ok'
     if len(user_input) == 1:
-        return f'Вы забыли указать сумму. Примеры правильного ввода:\n"/add 100 мороженка" или "/add 500"'
+        feedback = ''.join(
+            [
+                'Вы забыли указать сумму. Примеры правильного ввода:',
+                '\n"/add 100 мороженка" или "/add 500"',
+            ]
+        )
+        return feedback 
     try:
         if int(user_input[1]) <= 0:
-            feedback = f'Вы указали некорректную сумму. Сумма расхода должна быть больше нуля'
+            feedback = 'Вы указали некорректную сумму. Сумма расхода должна быть больше нуля'
     except ValueError:
-        feedback = f'Задана некорректная сумма. Примеры правильного ввода:\n"/add 100 мороженка" или "/add 500"'
+        feedback = ''.join(
+            [
+                'Задана некорректная сумма. Примеры правильного ввода:',
+                '\n"/add 100 мороженка" или "/add 500"',
+            ]
+        )
     return feedback
 
 
 def make_expense(user_id, user_input):
-    user_categories = filter_user_data(load_data(), user_id)['categories']
-    sum = user_input.split()[1]
+    user_categories = get_user_categories(user_id)
+    amount = user_input.split()[1]
     if len(user_input.split()) == 2:
         description = None
     else:
-        description = user_input.partition(' ')[2][(len(sum) + 1):]
+        description = user_input.partition(' ')[2][(len(amount) + 1):]
     if description is not None and description.lower().strip() in user_categories:
         category, description = description.lower().strip(), None
     else:
@@ -31,7 +44,7 @@ def make_expense(user_id, user_input):
         'user_id' : user_id,
         'expense_id' : uuid.uuid4(),
         'created_at' : datetime.datetime.utcnow(),
-        'sum' : sum,
+        'amount' : amount,
         'category' : category,
         'description' : description,
     }
@@ -39,7 +52,7 @@ def make_expense(user_id, user_input):
 
 
 def get_new_expense_feedback(new_expense):
-    feedback = f"Новая расходная операция на сумму {new_expense['sum']} рублей\n"
+    feedback = f"Новая расходная операция на сумму {new_expense['amount']} рублей\n"
     if new_expense['description'] is not None:
         feedback += f"Комментарий: {new_expense['description']}\n"
     if new_expense['category'] != MISCELLANEOUS_CATEGORY:
@@ -47,14 +60,8 @@ def get_new_expense_feedback(new_expense):
     return feedback
 
 
-def save_new_expense(new_expense):
-    data_dict = load_data()
-    data_dict['expenses'].append(new_expense)
-    save_data(data_dict)
-
-
 def add_expense(user_id, user_input):
-    feedback = check_expense_string(user_input)
+    feedback = check_expense_input(user_input)
     if feedback != 'ok':
         return None, feedback
     new_expense = make_expense(user_id, user_input)
@@ -63,28 +70,18 @@ def add_expense(user_id, user_input):
     return new_expense, feedback
 
 
-def update_expense(updated_expense):
-    data_dict = load_data()
-    target_index = find_index_by_id(data_dict['expenses'], 'expense_id', updated_expense['expense_id'])
-    if target_index is None:
-        data_dict['expenses'].append(updated_expense)
-    else:
-        data_dict['expenses'][target_index] = updated_expense
-    save_data(data_dict)
-
-
-def format_expenses_report(user_id):
-    user_data = filter_user_data(load_data(), user_id)
-    expenses_list = user_data['expenses']
-    report = None
-    utc_offset = datetime.timedelta(hours=user_data['settings']['utc_offset'])
+def make_expenses_report(user_id):
+    expenses_list = get_user_expenses(user_id)
+    report = ''
+    utc_offset = datetime.timedelta(hours=get_user_utc_offset(user_id))
     for expense in expenses_list:
-        created_at = expense['created_at']
-        report = str(report or '') + f"• ({(created_at + utc_offset).strftime('%d.%m.%y, %H:%M')}) ({expense['category'].capitalize()}):  -{expense['sum']} руб. "
+        formatted_created_at = (expense['created_at'] + utc_offset).strftime('%d.%m.%y, %H:%M')
+        formatted_category = expense['category'].capitalize()
+        report += f"• ({formatted_created_at}) ({formatted_category}): -{expense['amount']} руб."
         if expense['description'] is not None:
-            report += f"\n{expense['description']}"
+            report += f" ({expense['description'].capitalize()})"
         report += '\n'
-    if report is None:
+    if report == '':
         report = 'Расходов не найдено. Везет же!'
     else:
         report = 'Cписок ваших расходов:\n' + report
