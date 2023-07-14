@@ -1,52 +1,23 @@
 import datetime
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import (
     CommandHandler, CallbackQueryHandler, ConversationHandler, MessageHandler, Filters)
-from categories import add_category 
-from database_handlers import update_utc_offset, get_user_settings, update_config_status
-from constants import REGIONS, UTC_OFFSETS_DIVISION, COMMANDS
+from constants import COMMANDS
+from db.settings import update_utc_offset, get_user_settings, update_config_status
+from apps.categories import add_category 
+from bot.keyboards import make_true_false_question_buttons, make_regions_buttons, make_utc_buttons
 
 
 NOT_FIRST_LAUNCH, REGION, UTC_OFFSET, CATEGORIES = range(4)
-
-
-def make_regions_buttons():
-    button_list = [InlineKeyboardButton(
-        key.title().replace('И', 'и'), callback_data = value) for key, value in REGIONS]
-    reply_markup = InlineKeyboardMarkup(
-        [button_list[index:index + 2] for index in range(0, len(button_list), 2)])
-    return reply_markup
-
-
-def make_utc_buttons(region):
-    button_list = []
-    for offset in UTC_OFFSETS_DIVISION[region]:
-        if offset > 0:
-            title = '+' + str(offset)
-        else:
-            title = str(offset)
-        button = InlineKeyboardButton(title, callback_data = offset)
-        button_list.append(button)
-    reply_markup = InlineKeyboardMarkup(
-        [button_list[index:index + 3] for index in range(0, len(button_list), 3)])
-    return reply_markup
-
-
-def make_reinit_settings_buttons():
-    button_list = [InlineKeyboardButton(
-        key, callback_data = value) for key, value in [('Да', 'yes'), ('Нет', 'no')]]
-    reply_markup = InlineKeyboardMarkup([button_list])
-    return reply_markup
-
+   
 
 def start_greetings_stage(update, context):
-    config_status = get_user_settings(update.message.chat.id)['is_app_configured']
+    config_status = get_user_settings(update.message.chat.id).is_app_configured
     if config_status:
         bot_answer = ' '.join([
             'Привет! Если не ошибаюсь, мы с вами уже зафиксировали первоначальные настройки.',
             'Уверены, что хотите повторить процесс?',
         ])
-        reinit_buttons = make_reinit_settings_buttons()
+        reinit_buttons = make_true_false_question_buttons()
         update.message.reply_text(bot_answer, quote=False, reply_markup = reinit_buttons)
         return NOT_FIRST_LAUNCH     
     else:
@@ -76,7 +47,7 @@ def start_reinit_stage(update, context):
 
 def start_region_stage(update, context):
     region = update.callback_query.data
-    update.callback_query.answer('Всё с вами ясно!')
+    update.callback_query.answer()
     utc_question = ''.join(
         [
             'Теперь укажите отклонение времени от UTC в вашем регионе ',
@@ -88,7 +59,7 @@ def start_region_stage(update, context):
 
 def start_utc_offset_stage(update, context):
     offset = int(update.callback_query.data)
-    update.callback_query.answer('Настройка сохранена!')
+    update.callback_query.answer()
     estimated_date = (
         datetime.datetime.utcnow() + datetime.timedelta(hours=offset)).strftime('%d.%m.%y, %H:%M')
     bot_answer = [

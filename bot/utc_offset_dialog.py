@@ -1,18 +1,18 @@
 import datetime
 from telegram.ext import CommandHandler, CallbackQueryHandler, ConversationHandler
-from first_launch import make_regions_buttons, make_utc_buttons
-from database_handlers import update_utc_offset
 from constants import COMMANDS
+from db.settings import update_utc_offset
+from bot.keyboards import make_regions_buttons, make_utc_buttons
 
 
 REGION, UTC_OFFSET = range(2)
 
 
 def start_greetings_stage(update, context):
-        region_question = 'Выберите регион, в котором находитесь:'
-        regions_buttons = make_regions_buttons()
-        update.message.reply_text(region_question, quote=False, reply_markup = regions_buttons)
-        return REGION
+    region_question = 'Выберите регион, в котором находитесь:'
+    regions_buttons = make_regions_buttons()
+    update.message.reply_text(region_question, quote=False, reply_markup = regions_buttons)
+    return REGION
 
 
 def start_region_stage(update, context):
@@ -49,12 +49,12 @@ def start_cancel_stage(update, context):
 
 def add_utc_offset_handler():
     utc_offset_handler = ConversationHandler(
-    entry_points=[CommandHandler('utc_offset', start_greetings_stage)],
-    states={
-        REGION: [CallbackQueryHandler(start_region_stage)],
-        UTC_OFFSET: [CallbackQueryHandler(start_utc_offset_stage)],
-    },
-    fallbacks=[CommandHandler(COMMANDS.keys(), start_cancel_stage)],
-    per_user=False,
+        entry_points=[CommandHandler('utc_offset', start_greetings_stage)],
+        states={
+            REGION: [CallbackQueryHandler(start_region_stage)],
+            UTC_OFFSET: [CallbackQueryHandler(start_utc_offset_stage)],
+        },
+        fallbacks=[CommandHandler(COMMANDS.keys(), start_cancel_stage)],
+        per_user=False,
     )
     return utc_offset_handler
