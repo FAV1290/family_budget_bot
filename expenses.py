@@ -8,14 +8,9 @@ def check_expense_input(user_input):
     feedback = 'ok'
     try:
         if int(user_input) <= 0:
-            feedback = 'Сумма расхода должна быть больше нуля.'
+            feedback = 'Значение должно быть больше нуля.'
     except ValueError:
-        feedback = ''.join(
-            [
-                'Задана некорректная сумма. Примеры правильного ввода:',
-                '\n"/add 100 мороженка" или "/add 500".',
-            ]
-        )
+        feedback = 'Введено некорректное значение.'
     return feedback
 
 

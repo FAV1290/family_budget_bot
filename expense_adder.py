@@ -42,9 +42,9 @@ def start_amount_stage(update, context):
         return CATEGORY
 
 
-def make_comment_buttons(user_id):
-    yes_tuple = ('Да', str(user_id) + 'yes')
-    no_tuple = ('Нет', str(user_id) + 'no')
+def make_comment_buttons(expense_id):
+    yes_tuple = ('Да', str(expense_id) + 'yes')
+    no_tuple = ('Нет', str(expense_id) + 'no')
     button_list = [
         InlineKeyboardButton(key, callback_data = value) for key, value in [yes_tuple, no_tuple]]
     reply_markup = InlineKeyboardMarkup([button_list])
@@ -110,7 +110,7 @@ def start_cancel_stage(update, context):
 
 def add_expense_handler():
     add_expense_handler = ConversationHandler(
-        entry_points=[CommandHandler('add', start_naming_stage)],
+        entry_points=[CommandHandler('add', start_naming_stage)], 
         states={
             AMOUNT: [MessageHandler(Filters.text & ~Filters.command, start_amount_stage)],
             CATEGORY: [CallbackQueryHandler(start_category_stage)],

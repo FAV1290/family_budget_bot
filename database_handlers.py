@@ -118,6 +118,12 @@ def get_user_categories(target_id):
     return user_categories
 
 
+def change_category_limit(target_id, new_limit):
+    target_category_object = Category.query.filter(Category.category_id == target_id).first()
+    target_category_object.limit = new_limit
+    db_session.commit()
+
+
 def update_utc_offset(target_id, new_utc_offset):
     settings_object = Settings.query.filter(Settings.user_id == target_id).first()
     if settings_object is None:

@@ -3,10 +3,12 @@ import datetime
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Updater, CommandHandler
 from constants import API_TOKEN, COMMANDS, MISCELLANEOUS_CATEGORY_NAME
-from categories import make_categories_report, add_category, get_user_categories_names
+from categories import make_categories_report, get_user_categories_names
 from expenses import make_expenses_report, add_expense
 from first_launch import start_handler
-from add_expense import add_expense_handler
+from expense_adder import add_expense_handler
+from category_adder import add_category_handler
+from utc_offset_changer import add_utc_offset_handler
 from database_handlers import change_expense_category, get_expense_by_id
 
 
@@ -62,11 +64,6 @@ def set_expense_category(update, context):
     update.callback_query.edit_message_text(text=feedback)
 
 
-def add_category_handler(update, context):
-    feedback = add_category(update.message.chat.id, update.message.text.partition(' ')[2])
-    update.message.reply_text(feedback, quote=False)
-
-
 def show_expenses_handler(update, context):
     expenses_report = make_expenses_report(update.message.chat.id)
     update.message.reply_text(expenses_report, quote=False)
@@ -80,12 +77,13 @@ def show_categories_handler(update, context):
 def main():
     ffbot = Updater(API_TOKEN, use_context=True)
     dp = ffbot.dispatcher
-    dp.add_handler(start_handler())
-    dp.add_handler(add_expense_handler())
-    dp.add_handler(CommandHandler('help', help_handler))    
-    dp.add_handler(CommandHandler('new_category', add_category_handler))
-    dp.add_handler(CommandHandler('categories', show_categories_handler))
-    dp.add_handler(CommandHandler('expenses', show_expenses_handler))
+    dp.add_handler(start_handler()) #s
+    dp.add_handler(add_expense_handler()) #a
+    dp.add_handler(add_category_handler()) #n
+    dp.add_handler(add_utc_offset_handler()) #u
+    dp.add_handler(CommandHandler('help', help_handler)) #h    
+    dp.add_handler(CommandHandler('categories', show_categories_handler)) #c
+    dp.add_handler(CommandHandler('expenses', show_expenses_handler)) #e
     logging.info(f'\n\n\n{datetime.datetime.now()}: Bot has started')
     ffbot.start_polling()
     ffbot.idle()
