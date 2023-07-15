@@ -51,10 +51,11 @@ def make_categories_report(user_id):
     categories_list = get_user_categories(user_id)
     report = 'Вам доступны следующие категории расходов:'
     for category in sorted(categories_list, key = lambda category:category.name):
+        expenses_sum = get_expenses_sum_by_category(user_id, category.name)
         report += f'\n • {category.name.capitalize()}'
         if category.limit is not None:
-            report += f' (Лимит: {category.limit} руб., '
-            expenses_sum = get_expenses_sum_by_category(user_id, category.name)
             balance = category.limit - expenses_sum
-            report += f'остаток: {balance} руб.)'
+            report += f' (Лимит: {category.limit}, расход: {expenses_sum}, остаток: {balance})'
+        else:
+            report += f' (Расход: {expenses_sum})'
     return report
