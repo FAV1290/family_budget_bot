@@ -8,6 +8,7 @@ from bot.first_launch_dialog import start_handler
 from bot.add_expense_dialog import add_expense_handler
 from bot.add_category_dialog import add_category_handler
 from bot.utc_offset_dialog import add_utc_offset_handler
+from bot.add_income_dialog import add_income_handler
 
 
 logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s',
@@ -51,7 +52,8 @@ def main():
     dp.add_handler(add_expense_handler()) #a
     dp.add_handler(add_category_handler()) #n
     dp.add_handler(add_utc_offset_handler()) #u
-    dp.add_handler(CommandHandler('help', help_handler)) #h    
+    dp.add_handler(add_income_handler()) #b
+    dp.add_handler(CommandHandler('help', help_handler)) #h  
     dp.add_handler(CommandHandler('categories', show_categories_handler)) #c
     dp.add_handler(CommandHandler('expenses', show_expenses_handler)) #e
     logging.info(f'\n\n\n{datetime.datetime.now()}: Bot has started')

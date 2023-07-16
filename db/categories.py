@@ -28,7 +28,7 @@ def set_default_categories(target_user_id):
 
 
 def get_user_categories(target_id):
-    user_categories_object = Category.query.filter(Category.user_id == target_id)
+    user_categories_object = Category.query.filter(Category.user_id == target_id).order_by(Category.name)
     if user_categories_object.first() is None:
         set_default_categories(target_id)
         return get_user_categories(target_id)

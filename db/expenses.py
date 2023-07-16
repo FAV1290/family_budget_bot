@@ -20,7 +20,6 @@ def change_expense_description(target_id, new_description):
 
 
 def get_user_expenses(target_user_id):
-    user_expenses = []
     user_expenses_object = Expense.query.filter(
         Expense.user_id == target_user_id).order_by(Expense.created_at)
     user_expenses = [expense_object for expense_object in user_expenses_object]
