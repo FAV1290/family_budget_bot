@@ -1,6 +1,8 @@
 import uuid
 from db.database_models import Category
 from db.categories import get_user_categories, save_new_category, get_expenses_sum_by_category
+from apps.incomes import get_incomes_sum
+from apps.expenses import get_expenses_sum
 
 
 def get_user_categories_names(user_id):
@@ -49,13 +51,29 @@ def add_category(user_id, user_input):
 
 def make_categories_report(user_id):
     categories_list = get_user_categories(user_id)
-    report = 'Вам доступны следующие категории расходов:'
-    for category in sorted(categories_list, key = lambda category:category.name):
-        expenses_sum = get_expenses_sum_by_category(user_id, category.name)
+    incomes_sum = get_incomes_sum(user_id)
+    expenses_sum = get_expenses_sum(user_id)
+    limits_sum = 0
+    report = ''
+    if incomes_sum > 0:
+        report += f'Общий бюджет на период: {incomes_sum} руб.\n\n'
+    report += 'Вам доступны следующие категории расходов:'
+    for category in categories_list:
+        expenses_sum_by_category = get_expenses_sum_by_category(user_id, category.name)
         report += f'\n • {category.name.capitalize()}'
         if category.limit is not None:
-            balance = category.limit - expenses_sum
-            report += f' (Лимит: {category.limit}, расход: {expenses_sum}, остаток: {balance})'
+            balance = category.limit - expenses_sum_by_category
+            report += f' (Лимит: {category.limit}, расход: {expenses_sum_by_category}, остаток: {balance})'
         else:
             report += f' (Расход: {expenses_sum})'
+        if category.limit is not None:
+            limits_sum += category.limit
+    balance_plan = incomes_sum - limits_sum
+    balance_fact = incomes_sum - expenses_sum
+    report_conclusion = [
+        '\n\nЕсли лимиты по всем категориям не будут превышены,\n',
+        f'по итогам периода останется {balance_plan} руб.',
+        f'\n\nСейчас осталось {balance_fact} руб. из {incomes_sum}'
+    ]
+    report += ''.join(report_conclusion)
     return report

@@ -14,7 +14,7 @@ def start_greetings_stage(update, context):
     return NAME
     
 
-def start_naming_stage(update, context):
+def start_naming_stage(update, context):    #А почему не add_category? Та функция вроде делает примерно то же самое
     user_input = update.message.text.lower().strip()
     feedback = check_category_name(update.message.chat.id, user_input)
     if feedback == 'ok':
@@ -50,7 +50,7 @@ def start_limit_choice_stage(update, context):
 
 def start_limit_set_stage(update, context):
     target_id = context.chat_data['category_id']
-    feedback = check_category_limit(update.message.text) #Cделать свою функцию для лимита?
+    feedback = check_category_limit(update.message.text)
     if feedback == 'ok':
         new_limit = update.message.text
         change_category_limit(target_id, new_limit)

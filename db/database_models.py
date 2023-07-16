@@ -27,5 +27,13 @@ class Expense(Base):
     description = Column(String)
 
 
+class Income(Base):
+    __tablename__ = 'incomes'
+    user_id = Column(BigInteger)
+    income_id = Column(UUID, primary_key=True)
+    amount = Column(Integer)
+    description = Column(String)
+
+
 if __name__ == "__main__":
     Base.metadata.create_all(bind=engine)
