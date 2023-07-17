@@ -24,7 +24,7 @@ def make_income_object(target_user_id, income_amount):
 
 
 def add_income(user_id, user_input):
-    feedback = check_income_amount(user_input)
+    feedback = check_positive_amount(user_input)
     if feedback != 'ok':
         return None, feedback
     new_income = make_income_object(user_id, user_input)
