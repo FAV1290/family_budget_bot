@@ -27,18 +27,19 @@ def set_default_categories(target_user_id):
         save_new_category(new_category_object)
 
 
-def get_user_categories(target_id):
-    user_categories_object = Category.query.filter(Category.user_id == target_id).order_by(Category.name)
-    if user_categories_object.first() is None:
-        set_default_categories(target_id)
-        return get_user_categories(target_id)
-    user_categories = [category_object for category_object in user_categories_object]
-    return user_categories
+def get_user_categories(target_user_id):
+    categories_object = Category.query.filter(
+        Category.user_id == target_user_id).order_by(Category.name)
+    if categories_object.first() is None:
+        set_default_categories(target_user_id)
+        return get_user_categories(target_user_id)
+    user_categories_list = [category for category in categories_object]
+    return user_categories_list
 
 
-def change_category_limit(target_id, new_limit):
-    target_category_object = Category.query.filter(Category.category_id == target_id).first()
-    target_category_object.limit = new_limit
+def change_category_limit(category_id, new_limit):
+    target_category = Category.query.filter(Category.category_id == category_id).first()
+    target_category.limit = new_limit
     db_session.commit()
 
 

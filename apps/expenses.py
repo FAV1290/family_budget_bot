@@ -4,17 +4,7 @@ from constants import MISCELLANEOUS_CATEGORY_NAME
 from db.database_models import Expense
 from db.expenses import save_new_expense, get_user_expenses
 from db.settings import get_user_settings
-from apps.incomes import get_incomes_sum
-
-
-def check_expense_amount(user_input):
-    feedback = 'ok'
-    try:
-        if int(user_input) <= 0:
-            feedback = 'Значение должно быть больше нуля.'
-    except ValueError:
-        feedback = 'Введено некорректное значение.'
-    return feedback
+from apps.incomes import get_incomes_sum, check_positive_amount
 
 
 def make_expense_object(target_user_id, user_input):
@@ -31,7 +21,7 @@ def make_expense_object(target_user_id, user_input):
 
 
 def add_expense(user_id, user_input):
-    feedback = check_expense_amount(user_input)
+    feedback = check_positive_amount(user_input)
     if feedback != 'ok':
         return None, feedback
     new_expense = make_expense_object(user_id, user_input)

@@ -1,14 +1,14 @@
 import logging
 import datetime
 from telegram.ext import Updater, CommandHandler
-from constants import API_TOKEN, COMMANDS, QUICK_START, START_SPEECH
+from constants import API_TOKEN, COMMANDS, START_SPEECH
 from apps.categories import make_categories_report
 from apps.expenses import make_expenses_report
-from bot.first_launch_dialog import start_handler
 from bot.add_expense_dialog import add_expense_handler
 from bot.add_category_dialog import add_category_handler
 from bot.utc_offset_dialog import add_utc_offset_handler
 from bot.add_income_dialog import add_income_handler
+from bot.change_category_limit_dialog import change_category_limit_handler
 
 
 logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s',
@@ -45,17 +45,15 @@ def show_categories_handler(update, context):
 def main():
     ffbot = Updater(API_TOKEN, use_context=True)
     dp = ffbot.dispatcher
-    if QUICK_START:
-        dp.add_handler(CommandHandler('start', hello_handler)) #s 
-    else:
-        dp.add_handler(start_handler()) #s
-    dp.add_handler(add_expense_handler()) #a
-    dp.add_handler(add_category_handler()) #n
-    dp.add_handler(add_utc_offset_handler()) #u
-    dp.add_handler(add_income_handler()) #b
-    dp.add_handler(CommandHandler('help', help_handler)) #h  
-    dp.add_handler(CommandHandler('categories', show_categories_handler)) #c
-    dp.add_handler(CommandHandler('expenses', show_expenses_handler)) #e
+    dp.add_handler(CommandHandler('start', hello_handler)) #start
+    dp.add_handler(add_expense_handler()) #add
+    dp.add_handler(add_category_handler()) #new_category
+    dp.add_handler(add_utc_offset_handler()) #utc_offset
+    dp.add_handler(add_income_handler()) #boost_income
+    dp.add_handler(change_category_limit_handler()) #category_limit
+    dp.add_handler(CommandHandler('help', help_handler)) #help  
+    dp.add_handler(CommandHandler('categories', show_categories_handler)) #categories
+    dp.add_handler(CommandHandler('expenses', show_expenses_handler)) #expenses
     logging.info(f'\n\n\n{datetime.datetime.now()}: Bot has started')
     ffbot.start_polling()
     ffbot.idle()
