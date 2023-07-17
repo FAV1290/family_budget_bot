@@ -3,7 +3,7 @@ from db.database_models import Income
 from db.incomes import save_new_income, get_user_incomes
 
 
-def check_income_amount(user_input):    #объединить с check_expense_amount?
+def check_positive_amount(user_input):
     feedback = 'ok'
     try:
         if int(user_input) <= 0:
@@ -34,7 +34,5 @@ def add_income(user_id, user_input):
 
 def get_incomes_sum(user_id):
     user_incomes = get_user_incomes(user_id)
-    incomes_sum = 0
-    for income_object in user_incomes:  #а может sum с лямбдой?
-        incomes_sum += income_object.amount
+    incomes_sum = sum([income.amount for income in user_incomes])
     return incomes_sum

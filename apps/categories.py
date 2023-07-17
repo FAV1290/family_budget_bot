@@ -77,3 +77,10 @@ def make_categories_report(user_id):
     ]
     report += ''.join(report_conclusion)
     return report
+
+
+def get_user_category_by_name(user_id, target_category_name):
+    user_categories_list = get_user_categories(user_id)
+    for category in user_categories_list:
+        if category.name == target_category_name:
+            return category

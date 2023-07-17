@@ -25,19 +25,20 @@ UTC_OFFSETS_DIVISION = {
     'australia_oceania' : [6, 7, 8, 9, 10, 11, 12],
     'antarctica' : [-6, -3, 0, 2, 3, 5, 6, 7, 8, 10, 11, 12, 13],
 }
-COMMANDS = {
-    'add' : '• /add - добавить расход',
-    'new_category' : '• /new_category - добавить категорию расходов',
+COMMANDS = {    #Наверное стоит разделить на два списка
     'categories' : '• /categories - посмотреть список категорий',
     'expenses' : '• /expenses - посмотреть список расходов',
-    'help' : '• /help - посмотреть список доступных команд',
-    'start' : '• /start - руководство по первоначальной настройке',
+    'add' : '• /add - добавить расход',
+    'new_category' : '• /new_category - добавить категорию расходов',
+    'category_limit' : '• /category_limit - изменить лимит категории',
+    'boost_income' : '• /boost_income - добавить приход',
+    'help' : '• /help - посмотреть список всех доступных команд',
     'utc_offset' : '• /utc_offset - установить часовой пояс',
+    'start' : '• /start - руководство по первоначальной настройке',
 }
 MISCELLANEOUS_CATEGORY_NAME = 'разное'
 DEFAULT_CATEGORIES_NAMES = [MISCELLANEOUS_CATEGORY_NAME]
-QUICK_START = True
-START_SPEECH = ''.join(
+START_SPEECH = ''.join( #Актулизировать список команд (при необходимости, оставить самые распространенные, оставшиеся задвинуть в хэлп)
         [
         'Привет! Я помогаю вести семейный бюджет. Чтобы использовать мой функционал было удобнее, ',
         'предлагаю провести первоначальную настройку:\n',
