@@ -36,6 +36,6 @@ def get_user_settings(target_id):
         settings_object = Settings(
             user_id = target_id,
             is_app_configured = False,
-            utc_offset = 0
+            utc_offset = 0,
         )
     return settings_object

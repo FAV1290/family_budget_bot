@@ -4,7 +4,7 @@ from db.database_init import db_session
 from db.database_models import Expense, Category
 
 
-def clear_user_categories(target_user_id):
+def clear_user_categories(target_user_id):  #Should this function stay?
     user_categories_object = Category.query.filter(Category.user_id == target_user_id)
     for item in user_categories_object:
         db_session.delete(item)

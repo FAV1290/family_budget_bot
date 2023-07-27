@@ -68,14 +68,15 @@ def make_categories_report(user_id):
             report += f' (Расход: {expenses_sum})'
         if category.limit is not None:
             limits_sum += category.limit
-    balance_plan = incomes_sum - limits_sum
-    balance_fact = incomes_sum - expenses_sum
-    report_conclusion = [
-        '\n\nЕсли лимиты по всем категориям не будут превышены,\n',
-        f'по итогам периода останется {balance_plan} руб.',
-        f'\n\nСейчас осталось {balance_fact} руб. из {incomes_sum}'
-    ]
-    report += ''.join(report_conclusion)
+    if incomes_sum > 0:
+        balance_plan = incomes_sum - limits_sum
+        balance_fact = incomes_sum - expenses_sum
+        report_conclusion = [
+            '\n\nЕсли лимиты по всем категориям не будут превышены,\n',
+            f'по итогам периода останется {balance_plan} руб.',
+            f'\n\nСейчас осталось {balance_fact} руб. из {incomes_sum}'
+        ]
+        report += ''.join(report_conclusion)
     return report
 
 
