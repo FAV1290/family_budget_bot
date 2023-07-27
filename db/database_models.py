@@ -5,7 +5,7 @@ from db.database_init import Base, engine
 class Settings(Base):
     __tablename__ = 'settings'
     user_id = Column(BigInteger, primary_key=True)
-    is_app_configured = Column(Boolean)
+    is_app_configured = Column(Boolean) #Delete this legacy column?
     utc_offset = Column(Integer)
 
 
@@ -31,6 +31,7 @@ class Income(Base):
     __tablename__ = 'incomes'
     user_id = Column(BigInteger)
     income_id = Column(UUID, primary_key=True)
+    created_at = Column(DateTime)
     amount = Column(Integer)
     description = Column(String)
 
