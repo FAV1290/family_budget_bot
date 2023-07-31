@@ -29,3 +29,9 @@ def get_user_expenses(target_user_id):
 def get_expense_by_id(target_expense_id):
     expense_object = Expense.query.filter(Expense.expense_id == target_expense_id).first()
     return expense_object
+
+
+def get_last_user_expense(target_user_id):
+    last_expense = Expense.query.filter(
+        Expense.user_id == target_user_id).order_by(Expense.created_at).first()
+    return last_expense

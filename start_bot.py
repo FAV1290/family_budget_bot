@@ -2,6 +2,7 @@ import logging
 import datetime
 from telegram.ext import Updater, CommandHandler
 from constants import API_TOKEN, COMMANDS, START_SPEECH
+from db.expenses import get_last_user_expense
 from apps.categories import make_categories_report
 from apps.expenses import make_expenses_report
 from apps.incomes import make_incomes_report
@@ -46,6 +47,11 @@ def show_categories_handler(update, context):
 def show_incomes_handler(update, context):
     incomes_report = make_incomes_report(update.message.chat.id)
     update.message.reply_text(incomes_report, quote=False)
+
+
+def show_last_expense_handler(update, context):
+    last_expense = get_last_user_expense(update.message.chat.id)
+    update.message.reply_text(last_expense, quote=False)
 
 
 def main():
