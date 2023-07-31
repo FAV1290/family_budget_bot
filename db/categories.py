@@ -43,6 +43,9 @@ def change_category_limit(category_id, new_limit):
     db_session.commit()
 
 
+# function below was substituted with the new one in apps.expenses module.
+# Code below will be deleted after a few tests
+''' 
 def get_expenses_sum_by_category(target_id, category_name):
     target_expenses_object = Expense.query.filter(Expense.user_id == target_id)
     expenses_sum = 0
@@ -50,3 +53,4 @@ def get_expenses_sum_by_category(target_id, category_name):
         if expense_object.category == category_name:
             expenses_sum += expense_object.amount
     return expenses_sum
+'''

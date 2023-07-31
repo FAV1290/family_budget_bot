@@ -59,7 +59,7 @@ def make_expenses_report(user_id):
 
 
 def get_expenses_sum(user_id):
-    expenses_list = get_user_expenses(user_id)
+    expenses_list = get_current_expenses(user_id)
     expenses_sum = 0
     for expense_object in expenses_list:
         expenses_sum += expense_object.amount
@@ -74,3 +74,12 @@ def get_current_expenses(user_id):
     current_expenses = [expense for expense in expenses_list if datetime.datetime.strftime(
         expense.created_at, '%m-%Y') == current_period]
     return current_expenses
+
+
+def get_expenses_sum_by_category(target_user_id, category_name):
+    target_expenses = get_current_expenses(target_user_id)
+    expenses_sum = 0
+    for expense in target_expenses:
+        if expense.category == category_name:
+            expenses_sum += expense.amount
+    return expenses_sum
