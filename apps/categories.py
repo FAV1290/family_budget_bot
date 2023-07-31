@@ -1,8 +1,8 @@
 import uuid
 from db.database_models import Category
-from db.categories import get_user_categories, save_new_category, get_expenses_sum_by_category
+from db.categories import get_user_categories, save_new_category
 from apps.incomes import get_incomes_sum
-from apps.expenses import get_expenses_sum
+from apps.expenses import get_expenses_sum, get_expenses_sum_by_category
 
 
 def get_user_categories_names(user_id):
