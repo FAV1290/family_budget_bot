@@ -31,7 +31,9 @@ def get_expense_by_id(target_expense_id):
     return expense_object
 
 
-def get_last_user_expense(target_user_id):
+def pop_last_user_expense(target_user_id):
     last_expense = Expense.query.filter(
-        Expense.user_id == target_user_id).order_by(Expense.created_at).first()
+        Expense.user_id == target_user_id).order_by(Expense.created_at.desc()).first()
+    db_session.delete(last_expense)
+    db_session.commit()
     return last_expense
