@@ -2,8 +2,10 @@ import logging
 import datetime
 from telegram.ext import Updater, CommandHandler
 from constants import API_TOKEN, COMMANDS, START_SPEECH
+from db.expenses import pop_last_user_expense
 from apps.categories import make_categories_report
 from apps.expenses import make_expenses_report
+from apps.incomes import make_incomes_report
 from bot.add_expense_dialog import add_expense_handler
 from bot.add_category_dialog import add_category_handler
 from bot.utc_offset_dialog import add_utc_offset_handler
@@ -42,6 +44,25 @@ def show_categories_handler(update, context):
     update.message.reply_text(categories_report, quote=False)
 
 
+def show_incomes_handler(update, context):
+    incomes_report = make_incomes_report(update.message.chat.id)
+    update.message.reply_text(incomes_report, quote=False)
+
+
+def pop_last_expense_handler(update, context):  #push logic to another module(s)?
+    last_expense = pop_last_user_expense(update.message.chat.id)
+    if last_expense.description is None:
+        last_expense.description = '-'
+    report_elements = [
+        'Удален последний расход со следующими параметрами:',
+        f'• Сумма расхода: {last_expense.amount}',
+        f'• Категория: {last_expense.category}',
+        f'• Описание: {last_expense.description}',
+        f'• Дата и время создания: {last_expense.created_at.strftime("%d.%m.%Y, %H:%M:%S")}',
+    ]
+    update.message.reply_text('\n'.join(report_elements), quote=False)
+
+
 def main():
     ffbot = Updater(API_TOKEN, use_context=True)
     dp = ffbot.dispatcher
@@ -54,6 +75,8 @@ def main():
     dp.add_handler(CommandHandler('help', help_handler)) #help  
     dp.add_handler(CommandHandler('categories', show_categories_handler)) #categories
     dp.add_handler(CommandHandler('expenses', show_expenses_handler)) #expenses
+    dp.add_handler(CommandHandler('incomes', show_incomes_handler)) #incomes
+    dp.add_handler(CommandHandler('rm_last_expense', pop_last_expense_handler)) #rm_last_expense
     logging.info(f'\n\n\n{datetime.datetime.now()}: Bot has started')
     ffbot.start_polling()
     ffbot.idle()

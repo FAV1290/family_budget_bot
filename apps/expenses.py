@@ -30,7 +30,7 @@ def add_expense(user_id, user_input):
 
 
 def make_expenses_report(user_id):
-    expenses_list = get_user_expenses(user_id)
+    expenses_list = get_current_expenses(user_id)
     incomes_sum = get_incomes_sum(user_id)
     expenses_sum = 0
     report = ''
@@ -47,7 +47,7 @@ def make_expenses_report(user_id):
         report = 'Расходов не найдено. Везет же!'
     else:
         report_phrases = [
-                'Cписок ваших расходов:\n',
+                'Cписок ваших расходов в текущем периоде:\n',
                 report,
                 f'\nВсего потрачено: {expenses_sum}',
                 f' из {incomes_sum} (остаток: {incomes_sum - expenses_sum})',
@@ -59,9 +59,27 @@ def make_expenses_report(user_id):
 
 
 def get_expenses_sum(user_id):
-    expenses_list = get_user_expenses(user_id)
+    expenses_list = get_current_expenses(user_id)
     expenses_sum = 0
     for expense_object in expenses_list:
         expenses_sum += expense_object.amount
     return expenses_sum
-    
+
+
+def get_current_expenses(user_id):
+    expenses_list = get_user_expenses(user_id)
+    user_utc_offset = get_user_settings(user_id).utc_offset
+    user_datetime = datetime.datetime.utcnow() + datetime.timedelta(hours=user_utc_offset)
+    current_period = datetime.datetime.strftime(user_datetime, '%m-%Y')
+    current_expenses = [expense for expense in expenses_list if datetime.datetime.strftime(
+        expense.created_at, '%m-%Y') == current_period]
+    return current_expenses
+
+
+def get_expenses_sum_by_category(target_user_id, category_name):
+    target_expenses = get_current_expenses(target_user_id)
+    expenses_sum = 0
+    for expense in target_expenses:
+        if expense.category == category_name:
+            expenses_sum += expense.amount
+    return expenses_sum
