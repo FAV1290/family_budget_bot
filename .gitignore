@@ -14,11 +14,3 @@ __pycache__/
 
 # Logs
 *.log
-
-
-# Json files
-*.json
-
-
-# Test script
-test.py
