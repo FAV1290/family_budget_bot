@@ -1,25 +1,28 @@
-from sqlalchemy import Column, Integer, Boolean, String, DateTime, BigInteger, UUID
-from db.database_init import Base, engine
+from sqlalchemy.orm import relationship
+from sqlalchemy import Column, Integer, String, DateTime, BigInteger, UUID, ForeignKey
+
+from db import FFBase
 
 
-class Settings(Base):
-    __tablename__ = 'settings'
-    user_id = Column(BigInteger, primary_key=True)
-    is_app_configured = Column(Boolean) #Delete this legacy column?
+class Profile(FFBase):
+    __tablename__ = 'profiles'
+    id = Column(BigInteger, primary_key=True)
     utc_offset = Column(Integer)
+    categories = relationship('Category', back_populates='profile')
+    expenses = relationship('Expense', back_populates='profile')
 
 
-class Category(Base):
+class Category(FFBase):
     __tablename__ = 'categories'
-    user_id = Column(BigInteger)
-    category_id = Column(UUID, primary_key=True)
+    id = Column(UUID, primary_key=True)
+    profile_id = ForeignKey('profiles.id')
     name = Column(String)
     limit = Column(Integer)
 
 
-class Expense(Base):
+class Expense(FFBase):
     __tablename__ = 'expenses'
-    user_id = Column(BigInteger)
+    id = Column(BigInteger)
     expense_id = Column(UUID, primary_key=True)
     created_at = Column(DateTime)
     amount = Column(Integer)
@@ -27,9 +30,9 @@ class Expense(Base):
     description = Column(String)
 
 
-class Income(Base):
+class Income(FFBase):
     __tablename__ = 'incomes'
-    user_id = Column(BigInteger)
+    id = Column(BigInteger)
     income_id = Column(UUID, primary_key=True)
     created_at = Column(DateTime)
     amount = Column(Integer)
@@ -37,4 +40,4 @@ class Income(Base):
 
 
 if __name__ == "__main__":
-    Base.metadata.create_all(bind=engine)
+    FFBase.metadata.create_all(bind=FFBase.engine)
