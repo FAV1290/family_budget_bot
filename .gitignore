@@ -9,6 +9,7 @@ venv.bak/
 
 # Cache
 __pycache__/
+.mypy_cache
 
 # Logs
 *.log
