@@ -53,7 +53,7 @@ class Category(FFBase, CreateObjectMixin):
         self.limit = limit
 
 
-class Expense(FFBase):
+class Expense(FFBase, CreateObjectMixin):
     __tablename__ = 'expenses'
     id: Mapped[UUID_BASED_ID]
     profile_id: Mapped[int] = mapped_column(ForeignKey('profiles.id', ondelete='CASCADE'))
@@ -66,8 +66,20 @@ class Expense(FFBase):
     created_at: Mapped[CREATED_AT]
     updated_at: Mapped[UPDATED_AT]
 
+    def __init__(
+        self, profile_id: int,
+        amount: int,
+        description: str,
+        category_id: UUID | None = None,
+    ) -> None:
+        self.id = uuid.uuid4()
+        self.profile_id = profile_id
+        self.amount = amount
+        self.category_id = category_id
+        self.description = description
 
-class Income(FFBase):
+
+class Income(FFBase, CreateObjectMixin):
     __tablename__ = 'incomes'
     id: Mapped[UUID_BASED_ID]
     profile_id: Mapped[int] = mapped_column(ForeignKey('profiles.id', ondelete='CASCADE'))
@@ -76,6 +88,12 @@ class Income(FFBase):
     description: Mapped[str] = mapped_column(String(128))
     created_at: Mapped[CREATED_AT]
     updated_at: Mapped[UPDATED_AT]
+
+    def __init__(self, profile_id: int, amount: int, description: str) -> None:
+        self.id = uuid.uuid4()
+        self.profile_id = profile_id
+        self.amount = amount
+        self.description = description
 
 
 def create_tables() -> None:
