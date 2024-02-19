@@ -7,10 +7,8 @@ ENV/
 env.bak/
 venv.bak/
 
-
 # Cache
 __pycache__/
-
 
 # Logs
 *.log

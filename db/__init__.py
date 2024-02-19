@@ -6,5 +6,6 @@ from constants import DB_HOST
 
 class FFBase(DeclarativeBase):
     engine = create_engine(DB_HOST)
-    db_session = scoped_session(sessionmaker(bind=engine))
-    query = db_session.query_property()
+    session = scoped_session(sessionmaker(bind=engine))
+    query = session.query_property() # Should it be?
+ 
