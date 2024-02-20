@@ -1,6 +1,8 @@
 import logging
 import datetime
 
+import alembic.config
+
 from bot import FamilyFundsBot
 from bot.routing import HANDLERS
 from constants import LOGGING_FORMAT, API_TOKEN, BOT_LOG_FILEPATH
@@ -12,6 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 def main() -> None:
+    alembic.config.main(argv=['check'])
     ffbot = FamilyFundsBot(API_TOKEN)
     ffbot.add_handlers(HANDLERS)
     logger.info(f'\n\n\n{datetime.datetime.now()}: Bot has started')

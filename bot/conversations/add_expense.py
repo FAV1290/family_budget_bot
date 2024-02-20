@@ -5,18 +5,21 @@ from bot.conversations.enums import AddExpenseConversationState
 
 
 async def start_conversation(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    await update.message.reply_text('Введите сумму расхода или /cancel для отмены:')
+    if update.message:
+        await update.message.reply_text('Введите сумму расхода (целое число) или /cancel для отмены:')
     return AddExpenseConversationState.AMOUNT
 
 
 async def process_amount(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    raw_amount = update.message.text
-    await update.message.reply_text(f'Вы ввели следующую сумму: {raw_amount}')   
+    if update.message:
+        raw_amount = update.message.text
+        await update.message.reply_text(f'Вы ввели следующую сумму: {raw_amount}')   
     return ConversationHandler.END
 
 
 async def toggle_cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    await update.message.reply_text('Галя, у нас отмена!') 
+    if update.message:
+        await update.message.reply_text('Галя, у нас отмена!') 
     return ConversationHandler.END
 
 

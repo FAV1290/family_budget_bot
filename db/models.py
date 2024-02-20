@@ -66,7 +66,7 @@ class Expense(FFBase, CreateMixin, SelfDeleteMixin):
     category_id: Mapped[UUID | None] = mapped_column(
         ForeignKey('categories.id', ondelete='SET NULL'))
     category: Mapped['Category'] = relationship(back_populates='expenses')
-    description: Mapped[str] = mapped_column(String(128))
+    description: Mapped[str | None] = mapped_column(String(128))
     created_at: Mapped[CREATED_AT]
     updated_at: Mapped[UPDATED_AT]
 
