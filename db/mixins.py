@@ -13,7 +13,7 @@ class FetchByIDMixin:
         return cls.session.get(cls, target_id)
 
 
-class CreateObjectMixin:
+class CreateMixin:
     session: scoped_session
 
     @classmethod
@@ -22,3 +22,11 @@ class CreateObjectMixin:
         cls.session.add(new_object)
         cls.session.commit()
         return new_object
+
+
+class SelfDeleteMixin:
+    session: scoped_session
+
+    def delete(self) -> None:
+        self.session.delete(self)
+        self.session.commit()
