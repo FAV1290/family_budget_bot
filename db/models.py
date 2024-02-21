@@ -20,9 +20,9 @@ class Profile(FFBase, FetchByIDMixin, CreateMixin):
     __tablename__ = 'profiles'
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
     utc_offset: Mapped[int] = mapped_column(default=0)
-    categories: Mapped[list['Category'] | None] = relationship(back_populates='profile')
-    expenses: Mapped[list['Expense'] | None] = relationship(back_populates='profile')
-    incomes: Mapped[list['Income'] | None] = relationship(back_populates='profile')
+    categories: Mapped[list['Category']] = relationship(back_populates='profile')
+    expenses: Mapped[list['Expense']] = relationship(back_populates='profile')
+    incomes: Mapped[list['Income']] = relationship(back_populates='profile')
     created_at: Mapped[CREATED_AT]
     updated_at: Mapped[UPDATED_AT]
 
@@ -71,10 +71,12 @@ class Expense(FFBase, CreateMixin, SelfDeleteMixin):
     updated_at: Mapped[UPDATED_AT]
 
     def __init__(
-        self, profile_id: int,
+        self,
+        profile_id: int,
         amount: int,
-        description: str,
         category_id: UUID | None = None,
+        description: str | None = None,
+
     ) -> None:
         self.id = uuid.uuid4()
         self.profile_id = profile_id
