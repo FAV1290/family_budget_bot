@@ -102,11 +102,11 @@ class Income(FFBase, CreateMixin):
     profile_id: Mapped[int] = mapped_column(ForeignKey('profiles.id', ondelete='CASCADE'))
     profile: Mapped['Profile'] = relationship(back_populates='incomes')
     amount: Mapped[int] = mapped_column()
-    description: Mapped[str] = mapped_column(String(128))
+    description: Mapped[str | None] = mapped_column(String(128))
     created_at: Mapped[CREATED_AT]
     updated_at: Mapped[UPDATED_AT]
 
-    def __init__(self, profile_id: int, amount: int, description: str) -> None:
+    def __init__(self, profile_id: int, amount: int, description: str | None = None) -> None:
         self.id = uuid.uuid4()
         self.profile_id = profile_id
         self.amount = amount

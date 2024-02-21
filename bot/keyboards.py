@@ -9,8 +9,8 @@ def create_user_categories_keyboard(
 ) -> InlineKeyboardMarkup:
     keyboard, keyboard_line = [], []
     for index, category in enumerate(user_categories):
-        category_button = InlineKeyboardButton(category.name.capitalize(), callback_data=str(category.id))
-        keyboard_line.append(category_button)
+        button = InlineKeyboardButton(category.name.capitalize(), callback_data=str(category.id))
+        keyboard_line.append(button)
         if index % line_size == line_size - 1:
             keyboard.append(keyboard_line)
             keyboard_line = []
@@ -24,4 +24,3 @@ def create_yes_or_no_keyboard() -> InlineKeyboardMarkup:
         InlineKeyboardButton('Да', callback_data='yes'),
         InlineKeyboardButton('Нет', callback_data='no'),
     ]])
-

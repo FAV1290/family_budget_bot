@@ -15,8 +15,7 @@ def main() -> None:
 
     logging.basicConfig(format=LOGGING_FORMAT, level=logging.INFO, filename=BOT_LOG_FILEPATH)
     logging.getLogger('httpx').setLevel(logging.WARNING)
-    logger = logging.getLogger(__name__)
-    logger.info(f'{datetime.datetime.now()}: Bot is starting...')
+    logging.getLogger('alembic').info(f'{datetime.datetime.now()}: Bot is starting...')
 
     ffbot = FamilyFundsBot(API_TOKEN)
     ffbot.add_handlers(HANDLERS)
