@@ -1,6 +1,6 @@
-from telegram.ext import CommandHandler, BaseHandler
+from telegram.ext import CommandHandler, BaseHandler, ConversationHandler
 
-from bot.conversations.add_expense import expense_add_handler
+from bot.conversations.add_expense import get_expense_add_handler_params
 from bot.handlers import (
     start_handler, help_handler, utc_offset_set_handler,
     category_add_handler, income_add_handler, rm_last_expense_handler
@@ -14,5 +14,5 @@ HANDLERS: list[BaseHandler] = [
     CommandHandler('boost_income', income_add_handler),          # boost_income
     CommandHandler('rm_last_expense', rm_last_expense_handler),  # rm_last_expense
     CommandHandler('utc_offset', utc_offset_set_handler),        # utc_offset
-    expense_add_handler,                                         # add
+    ConversationHandler(**get_expense_add_handler_params()),     # add
 ]

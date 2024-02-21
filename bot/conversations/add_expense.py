@@ -1,7 +1,11 @@
 import uuid
+import typing
 
 from telegram import Update
-from telegram.ext import ContextTypes, filters, ConversationHandler, CommandHandler, MessageHandler, CallbackQueryHandler
+from telegram.ext import (
+    ContextTypes, filters, ConversationHandler,
+    CommandHandler, MessageHandler, CallbackQueryHandler,
+)
 
 from db.models import Profile, Expense
 from bot.conversations.enums import AddExpenseState
@@ -60,13 +64,14 @@ async def toggle_cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> i
     return ConversationHandler.END
 
 
-expense_add_handler = ConversationHandler(
-    entry_points=[CommandHandler('add', start_conversation)],
-    states={
-        AddExpenseState.AMOUNT: [MessageHandler(filters.TEXT & ~filters.COMMAND, process_amount)],
-        AddExpenseState.CATEGORY: [CallbackQueryHandler(process_category)],
-        AddExpenseState.DESCRIPTION_CHOICE: [CallbackQueryHandler(process_description_choice)],
-        AddExpenseState.DESCRIPTION_SET: [MessageHandler(filters.TEXT & ~filters.COMMAND, process_description_set)],
-    },
-    fallbacks=[CommandHandler('cancel', toggle_cancel)],
-    )
+def get_expense_add_handler_params() -> dict[str, typing.Any]:
+    return {
+        'entry_points': [CommandHandler('add', start_conversation)],
+        'states': {
+            AddExpenseState.AMOUNT: [MessageHandler(filters.TEXT & ~filters.COMMAND, process_amount)],
+            AddExpenseState.CATEGORY: [CallbackQueryHandler(process_category)],
+            AddExpenseState.DESCRIPTION_CHOICE: [CallbackQueryHandler(process_description_choice)],
+            AddExpenseState.DESCRIPTION_SET: [MessageHandler(filters.TEXT & ~filters.COMMAND, process_description_set)],
+        },
+        'fallbacks': [CommandHandler('cancel', toggle_cancel)],
+    } 
