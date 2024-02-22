@@ -6,7 +6,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import String, DateTime, BigInteger, UUID, ForeignKey
 
 from db import FFBase
-from db.mixins import FetchByIDMixin, CreateMixin, SelfDeleteMixin
+from db.mixins import FetchByIDMixin, CreateMixin, SelfDeleteMixin, CurrentPeriodUserObjectsMixin
 
 UUID_BASED_ID = Annotated[uuid.UUID, mapped_column(UUID, primary_key=True)]
 CREATED_AT = Annotated[datetime, mapped_column(DateTime, default=datetime.utcnow)]
@@ -57,7 +57,7 @@ class Category(FFBase, CreateMixin):
         self.limit = limit
 
 
-class Expense(FFBase, CreateMixin, SelfDeleteMixin):
+class Expense(FFBase, CreateMixin, SelfDeleteMixin, CurrentPeriodUserObjectsMixin):
     __tablename__ = 'expenses'
     id: Mapped[UUID_BASED_ID]
     profile_id: Mapped[int] = mapped_column(ForeignKey('profiles.id', ondelete='CASCADE'))
@@ -89,14 +89,14 @@ class Expense(FFBase, CreateMixin, SelfDeleteMixin):
             'добавлен': (self.created_at + timedelta(
                 hours=self.profile.utc_offset)).strftime('%d-%m-%Y %H:%M:%S'),
             'сумма': str(self.amount),
-            'категория': self.category.name if self.category_id else '—',
+            'категория': self.category.name.capitalize() if self.category_id else '—',
             'описание': self.description or '—',
         }
         return '• ' + '\n• '.join(
             [f'{key.capitalize()}: {value}' for key, value in expense_str_map.items()])
 
 
-class Income(FFBase, CreateMixin):
+class Income(FFBase, CreateMixin, CurrentPeriodUserObjectsMixin):
     __tablename__ = 'incomes'
     id: Mapped[UUID_BASED_ID]
     profile_id: Mapped[int] = mapped_column(ForeignKey('profiles.id', ondelete='CASCADE'))

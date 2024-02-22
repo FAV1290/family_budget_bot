@@ -3,7 +3,8 @@ from datetime import datetime, timedelta
 from telegram import Update
 from telegram.ext import ContextTypes
 
-from db.models import Profile
+from db.models import Profile, Income
+from utils.reports import compose_current_incomes_report
 from constants import START_MESSAGE, COMMANDS
 
 
@@ -36,8 +37,16 @@ async def rm_last_expense_handler(update: Update, context: ContextTypes.DEFAULT_
         current_profile = Profile.fetch_by_id_or_create(update.effective_chat.id)
         if current_profile.expenses:
             target_expense = current_profile.expenses[-1]
+            target_expense_str = str(target_expense)
             target_expense.delete()
             await update.message.reply_text('Удален расход со следующими параметрами:')
-            await update.message.reply_text(str(target_expense))
+            await update.message.reply_text(target_expense_str)
         else:
             await update.message.reply_text('Расходы не найдены \U0001F937')
+
+
+async def incomes_report_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if update.effective_chat and update.message:
+        profile = Profile.fetch_by_id_or_create(update.effective_chat.id)
+        incomes = Income.fetch_current_period_objects(profile.id, profile.utc_offset)
+        await update.message.reply_text(compose_current_incomes_report(incomes, profile.utc_offset))
