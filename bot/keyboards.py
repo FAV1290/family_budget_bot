@@ -1,43 +1,26 @@
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-from constants import REGIONS, UTC_OFFSETS_DIVISION
-from apps.categories import get_user_categories_names
+from telegram import InlineKeyboardMarkup, InlineKeyboardButton
+
+from db.models import Category
 
 
-def make_categories_buttons(user_id):
-    categories = get_user_categories_names(user_id)
-    button_list = []
-    for category in categories:
-        button = InlineKeyboardButton(category.title(), callback_data=category)
-        button_list.append(button)
-    reply_markup = InlineKeyboardMarkup(
-        [button_list[index:index + 3] for index in range(0, len(button_list), 3)])
-    return reply_markup
+def create_user_categories_keyboard(
+    user_categories: list[Category],
+    line_size: int = 2,
+) -> InlineKeyboardMarkup:
+    keyboard, keyboard_line = [], []
+    for index, category in enumerate(user_categories):
+        button = InlineKeyboardButton(category.name.capitalize(), callback_data=str(category.id))
+        keyboard_line.append(button)
+        if index % line_size == line_size - 1:
+            keyboard.append(keyboard_line)
+            keyboard_line = []
+    keyboard.append(keyboard_line)
+    keyboard.append([InlineKeyboardButton('Без категории', callback_data='None')])
+    return InlineKeyboardMarkup(keyboard)
 
 
-def make_regions_buttons():
-    button_list = [InlineKeyboardButton(
-        key.title().replace('И', 'и'), callback_data = value) for key, value in REGIONS]
-    reply_markup = InlineKeyboardMarkup(
-        [button_list[index:index + 2] for index in range(0, len(button_list), 2)])
-    return reply_markup
-
-
-def make_utc_buttons(region):
-    button_list = []
-    for offset in UTC_OFFSETS_DIVISION[region]:
-        if offset > 0:
-            title = '+' + str(offset)
-        else:
-            title = str(offset)
-        button = InlineKeyboardButton(title, callback_data = offset)
-        button_list.append(button)
-    reply_markup = InlineKeyboardMarkup(
-        [button_list[index:index + 3] for index in range(0, len(button_list), 3)])
-    return reply_markup
-
-
-def make_true_false_question_buttons():
-    button_list = [InlineKeyboardButton(
-        key, callback_data = value) for key, value in [('Да', 'yes'), ('Нет', 'no')]]
-    reply_markup = InlineKeyboardMarkup([button_list])
-    return reply_markup
+def create_yes_or_no_keyboard() -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup([[
+        InlineKeyboardButton('Да', callback_data='yes'),
+        InlineKeyboardButton('Нет', callback_data='no'),
+    ]])
