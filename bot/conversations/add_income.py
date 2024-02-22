@@ -7,9 +7,9 @@ from telegram.ext import (
 )
 
 from db.models import Profile, Income
-from utils.validators import is_amount_str_valid
 from bot.conversations.enums import AddIncomeState
 from bot.keyboards import create_yes_or_no_keyboard
+from utils.validators import is_amount_str_valid, is_string_valid
 
 
 async def start_conversation(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
@@ -46,12 +46,17 @@ async def process_description_choice(update: Update, context: ContextTypes.DEFAU
 
 
 async def process_description_set(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    assert update.message and update.effective_chat and context.chat_data
-    context.chat_data['new_income']['description'] = update.message.text
-    current_profile = Profile.fetch_by_id_or_create(update.effective_chat.id)
-    Income.create(profile_id=current_profile.id, **context.chat_data['new_income'])
-    await update.message.reply_text('Приход успешно добавлен!')
-    return ConversationHandler.END
+    assert update.message and update.message.text and update.effective_chat
+    assert context.chat_data is not None
+    description = update.message.text
+    if is_string_valid(description, 128):
+        context.chat_data['new_income']['description'] = description
+        current_profile = Profile.fetch_by_id_or_create(update.effective_chat.id)
+        Income.create(profile_id=current_profile.id, **context.chat_data['new_income'])
+        await update.message.reply_text('Приход успешно добавлен!')
+        return ConversationHandler.END
+    await update.message.reply_text('Некорректный комментарий! Попробуйте еще раз:')
+    return AddIncomeState.DESCRIPTION_SET
 
 
 async def toggle_cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:

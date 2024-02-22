@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from telegram import Update
 from telegram.ext import ContextTypes
 
-from db.models import Category, Profile
+from db.models import Profile
 from constants import START_MESSAGE, COMMANDS
 
 
@@ -21,15 +21,7 @@ async def help_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
 
 
 # Add validators and transform to ConversationHandler
-async def category_add_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    if update.effective_chat and update.message and update.message.text:
-        current_profile = Profile.fetch_by_id_or_create(update.effective_chat.id)
-        new_category_name = update.message.text.split(maxsplit=1)[1]
-        Category.create(profile_id=current_profile.id, name=new_category_name)
-
-
-# Add validators and transform to ConversationHandler
-async def utc_offset_set_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+async def utc_offset_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if update.effective_chat and update.message and update.message.text:
         current_profile = Profile.fetch_by_id_or_create(update.effective_chat.id)
         new_utc_offset = int(update.message.text.split(maxsplit=1)[1])
