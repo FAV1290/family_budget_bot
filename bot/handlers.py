@@ -3,9 +3,13 @@ from datetime import datetime, timedelta
 from telegram import Update
 from telegram.ext import ContextTypes
 
-from db.models import Profile, Income
-from utils.reports import compose_current_incomes_report
+from utils.reports import (
+    compose_current_incomes_report,
+    compose_current_expenses_report,
+    compose_user_categories_report,
+)
 from constants import START_MESSAGE, COMMANDS
+from db.models import Profile, Income, Expense
 
 
 async def start_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -50,3 +54,21 @@ async def incomes_report_handler(update: Update, context: ContextTypes.DEFAULT_T
         profile = Profile.fetch_by_id_or_create(update.effective_chat.id)
         incomes = Income.fetch_current_period_objects(profile.id, profile.utc_offset)
         await update.message.reply_text(compose_current_incomes_report(incomes, profile.utc_offset))
+
+
+async def expenses_report_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if update.effective_chat and update.message:
+        profile = Profile.fetch_by_id_or_create(update.effective_chat.id)
+        incomes = Income.fetch_current_period_objects(profile.id, profile.utc_offset)
+        expenses = Expense.fetch_current_period_objects(profile.id, profile.utc_offset)
+        await update.message.reply_text(
+            compose_current_expenses_report(expenses, incomes, profile.utc_offset))
+
+
+async def categories_report_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if update.effective_chat and update.message:
+        profile = Profile.fetch_by_id_or_create(update.effective_chat.id)
+        incomes = Income.fetch_current_period_objects(profile.id, profile.utc_offset)
+        expenses = Expense.fetch_current_period_objects(profile.id, profile.utc_offset)
+        await update.message.reply_text(
+            compose_user_categories_report(incomes, expenses, profile.categories))
