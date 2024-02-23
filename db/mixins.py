@@ -1,7 +1,10 @@
 import uuid
 import typing
+from datetime import datetime, timedelta
 
 from sqlalchemy.orm import scoped_session, Mapped
+from sqlalchemy.sql import extract
+from sqlalchemy import select
 
 
 class FetchByIDMixin:
@@ -30,3 +33,23 @@ class SelfDeleteMixin:
     def delete(self) -> None:
         self.session.delete(self)
         self.session.commit()
+
+
+class CurrentPeriodUserObjectsMixin:
+    session: scoped_session
+    profile_id: Mapped[int]
+    created_at: Mapped[datetime]
+
+    @classmethod
+    def fetch_current_period_objects(
+        cls,
+        user_id: int,
+        user_utc_offset: int,
+    ) -> typing.Sequence[typing.Self]:
+        user_now = datetime.utcnow() + timedelta(hours=user_utc_offset)
+        current_month, current_year = user_now.month, user_now.year
+        return cls.session.execute(select(cls).where(
+            cls.profile_id == user_id,
+            extract('month', cls.created_at) == current_month,
+            extract('year', cls.created_at) == current_year,
+        )).scalars().all()
