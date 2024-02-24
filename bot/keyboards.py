@@ -1,6 +1,9 @@
+from datetime import datetime, timedelta
+
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 
 from db.models import Category
+from bot.conversations.enums import UTCRegion
 
 
 def create_user_categories_keyboard(
@@ -24,3 +27,18 @@ def create_yes_or_no_keyboard() -> InlineKeyboardMarkup:
         InlineKeyboardButton('Да', callback_data='yes'),
         InlineKeyboardButton('Нет', callback_data='no'),
     ]])
+
+
+def create_utc_regions_keyboard() -> InlineKeyboardMarkup:
+    buttons = [InlineKeyboardButton(
+        region.value.capitalize(), callback_data=region.value) for region in UTCRegion]
+    return InlineKeyboardMarkup([buttons[index:index + 2] for index in range(0, len(buttons), 2)])
+
+
+def create_utc_offsets_keyboard(offsets: list[int]) -> InlineKeyboardMarkup:
+    buttons = []
+    for offset in offsets:
+        label = (datetime.utcnow() + timedelta(hours=offset)).strftime('%d-%m-%Y %H:%M')
+        button = InlineKeyboardButton(label, callback_data=str(offset))
+        buttons.append(button)
+    return InlineKeyboardMarkup([buttons[index:index + 3] for index in range(0, len(buttons), 3)])
