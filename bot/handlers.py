@@ -1,5 +1,3 @@
-from datetime import datetime, timedelta
-
 from telegram import Update
 from telegram.ext import ContextTypes
 
@@ -23,17 +21,6 @@ async def help_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         text_lines = [f'• /{command} — {description}' for command, description in COMMANDS.items()]
         await update.message.reply_text('Вам доступны следующие команды:')
         await update.message.reply_text('\n'.join(text_lines))
-
-
-# Add validators and transform to ConversationHandler
-async def utc_offset_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    if update.effective_chat and update.message and update.message.text:
-        current_profile = Profile.fetch_by_id_or_create(update.effective_chat.id)
-        new_utc_offset = int(update.message.text.split(maxsplit=1)[1])
-        current_profile.set_utc_offset(new_utc_offset)
-        now = (datetime.utcnow() + timedelta(hours=new_utc_offset)).strftime('%d-%m-%Y %H:%M:%S')
-        await update.message.reply_text(
-            f'Часовой пояс успешно изменен. Ваши текущие дата и время: {now}')
 
 
 async def rm_last_expense_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
