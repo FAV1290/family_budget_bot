@@ -1,3 +1,4 @@
+import re
 import uuid
 import typing
 
@@ -20,9 +21,9 @@ async def start_conversation(update: Update, context: ContextTypes.DEFAULT_TYPE)
 
 
 async def process_amount(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    assert update.message and update.message.text and update.effective_chat
+    assert update.message and update.effective_chat
     assert context.chat_data is not None
-    amount_str = update.message.text.replace(' ', '').replace(',', '').replace('.', '')
+    amount_str = re.sub(r'\.|,|\s', '', update.message.text or '')
     if is_amount_str_valid(amount_str):
         context.chat_data.update({'new_expense': {'amount': int(amount_str)}})
         current_profile = Profile.fetch_by_id_or_create(update.effective_chat.id)

@@ -9,6 +9,7 @@ from bot.conversations.enums import UTCRegion
 def create_user_categories_keyboard(
     user_categories: list[Category],
     line_size: int = 2,
+    add_none_button: bool = True,
 ) -> InlineKeyboardMarkup:
     keyboard, keyboard_line = [], []
     for index, category in enumerate(user_categories):
@@ -18,7 +19,8 @@ def create_user_categories_keyboard(
             keyboard.append(keyboard_line)
             keyboard_line = []
     keyboard.append(keyboard_line)
-    keyboard.append([InlineKeyboardButton('Без категории', callback_data='None')])
+    if add_none_button:
+        keyboard.append([InlineKeyboardButton('Без категории', callback_data='None')])
     return InlineKeyboardMarkup(keyboard)
 
 

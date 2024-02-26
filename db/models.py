@@ -39,7 +39,7 @@ class Profile(FFBase, FetchByIDMixin, CreateMixin):
         self.session.commit()
 
 
-class Category(FFBase, CreateMixin):
+class Category(FFBase, FetchByIDMixin, CreateMixin):
     __tablename__ = 'categories'
     id: Mapped[UUID_BASED_ID]
     profile_id: Mapped[int] = mapped_column(ForeignKey('profiles.id', ondelete='CASCADE'))
@@ -55,6 +55,10 @@ class Category(FFBase, CreateMixin):
         self.profile_id = profile_id
         self.name = name
         self.limit = limit
+
+    def update_limit(self, new_limit: int) -> None:
+        self.limit = new_limit
+        self.session.commit()
 
 
 class Expense(FFBase, CreateMixin, SelfDeleteMixin, CurrentPeriodUserObjectsMixin):

@@ -1,3 +1,4 @@
+import re
 import typing
 
 from telegram import Update
@@ -19,9 +20,9 @@ async def start_conversation(update: Update, context: ContextTypes.DEFAULT_TYPE)
 
 
 async def process_name(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    assert update.message and update.message.text and update.effective_chat
+    assert update.message and update.effective_chat
     assert context.chat_data is not None
-    name_str = update.message.text
+    name_str = update.message.text or ''
     current_profile = Profile.fetch_by_id_or_create(update.effective_chat.id)
     profile_categories_names = [category.name for category in current_profile.categories]
     if is_category_name_valid(name_str, profile_categories_names):
@@ -48,11 +49,11 @@ async def process_limit_choice(update: Update, context: ContextTypes.DEFAULT_TYP
 
 
 async def process_limit_set(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    assert update.message and update.message.text and update.effective_chat
+    assert update.message and update.effective_chat
     assert context.chat_data is not None
-    limit = update.message.text.replace(' ', '').replace(',', '').replace('.', '')
-    if is_amount_str_valid(limit):
-        context.chat_data['new_category']['limit'] = limit
+    limit_str = re.sub(r'\.|,|\s', '', update.message.text or '')
+    if is_amount_str_valid(limit_str):
+        context.chat_data['new_category']['limit'] = int(limit_str)
         Category.create(profile_id=update.effective_chat.id, **context.chat_data['new_category'])
         await update.message.reply_text('Категория успешно добавлена!')
         return ConversationHandler.END
