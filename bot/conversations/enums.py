@@ -20,6 +20,11 @@ class AddCategoryState(enum.IntEnum):
     LIMIT_SET = 3
 
 
+class UpdateCategoryLimitState(enum.IntEnum):
+    CATEGORY = 1
+    LIMIT = 2
+
+
 class UpdateUTCOffsetState(enum.IntEnum):
     REGION = 1
     UTC_OFFSET = 2
