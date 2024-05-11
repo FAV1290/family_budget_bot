@@ -60,8 +60,8 @@ def test__compose_current_expenses_report__filled_lists_case(expense_category_mo
     expected_result = ''.join([
         'Cписок ваших расходов в текущем периоде:\n',
         '• (01.01.24, 00:00) (Без категории): -100 руб. (One)\n',
-        '• (01.01.24, 00:00) (Test): -300 руб.\n',
-        '\nВсего потрачено: 400 руб. из 1000 (остаток: 600)'
+        '• (01.01.24, 00:00) (Test): -300 руб.',
+        '\nОстаток: 600 (потрачено 400 из 1000 руб.)'
     ])
     assert compose_current_expenses_report(expenses, incomes) == expected_result
 
@@ -71,7 +71,7 @@ def test__compose_current_expenses_report__shifts_time_according_to_utc_offset()
     expenses = [Expense(profile_id=1, amount=100)]
     expected_result = ''.join([
         'Cписок ваших расходов в текущем периоде:\n',
-        '• (01.01.24, 03:00) (Без категории): -100 руб.\n',
+        '• (01.01.24, 03:00) (Без категории): -100 руб.',
         '\nВсего потрачено: 100 руб.'
     ])
     assert compose_current_expenses_report(expenses, [], utc_offset=3) == expected_result

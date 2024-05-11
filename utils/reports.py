@@ -34,9 +34,11 @@ def compose_current_expenses_report(
         return 'Расходов не найдено. Везет же!'
     incomes_sum = sum([income.amount for income in current_incomes])
     report = f'Cписок ваших расходов в текущем периоде:\n{expenses_list_str}'
-    report += f'\nВсего потрачено: {expenses_sum} руб.'
     if incomes_sum:
-        report += f' из {incomes_sum} (остаток: {incomes_sum - expenses_sum})'
+        spare_money = incomes_sum - expenses_sum
+        report += f'Остаток: {spare_money} (потрачено {expenses_sum} из {incomes_sum} руб.)'
+    else:
+        report += f'Всего потрачено: {expenses_sum} руб.'
     return report
 
 
