@@ -25,19 +25,18 @@ START_MESSAGE = ''.join(
     ]
 )
 COMMANDS = {
-    # object lists
     'categories': 'список категорий расходов',
     'incomes': 'список приходов',
     'expenses': 'посмотреть список расходов',
-    # categories actions
+
     'new_category': 'добавить категорию расходов',
-    'category_limit': 'изменить лимит категории',
-    # expenses actions
+    'limit_category': 'изменить лимит категории',
+
     'add': 'добавить расход',
     'rm_last_expense': 'удалить последний расход',
-    # incomes actions
+
     'boost_income': 'добавить приход',
-    # misc
+
     'help': 'список доступных команд',
     'utc_offset': 'установить часовой пояс',
     'start': 'руководство по первоначальной настройке',
