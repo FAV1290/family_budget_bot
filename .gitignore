@@ -8,6 +8,7 @@ env.bak/
 venv.bak/
 
 # Cache
+__pycache__
 __pycache__/
 .mypy_cache
 .pytest_cache

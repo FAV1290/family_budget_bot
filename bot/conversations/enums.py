@@ -31,14 +31,14 @@ class UpdateUTCOffsetState(enum.IntEnum):
 
 
 class UTCRegion(enum.Enum):
-    AF = 'африка'
-    EU = 'европа'
-    AS = 'азия'
-    NA = 'северная америка'
-    SA = 'южная америка'
-    OC = 'австралия и океания'
-    AN = 'антарктида'
-    NO = 'выбрать время вручную'
+    AF = "африка"
+    EU = "европа"
+    AS = "азия"
+    NA = "северная америка"
+    SA = "южная америка"
+    OC = "австралия и океания"
+    AN = "антарктида"
+    NO = "выбрать время вручную"
 
     def get_offsets(self) -> list[int]:
         regions_to_utc_offsets_map = {

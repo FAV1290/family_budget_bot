@@ -10,7 +10,7 @@ from sqlalchemy.orm import scoped_session, sessionmaker, DeclarativeBase, Mapped
 @pytest.fixture
 def db_class() -> DeclarativeBase:
     class TestBase(DeclarativeBase):
-        engine = create_engine('sqlite:///:memory:')
+        engine = create_engine("sqlite:///:memory:")
         session = scoped_session(sessionmaker(bind=engine))
     return TestBase
 
@@ -20,7 +20,7 @@ def test_model(db_class) -> typing.Callable:
     def create_test_model(mixins=[]):
         class TestModel(db_class, *mixins):
             _next_instance_id = 0
-            __tablename__ = 'test'
+            __tablename__ = "test"
             id: Mapped[int] = mapped_column(primary_key=True)
             profile_id: Mapped[int] = mapped_column()
             created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)

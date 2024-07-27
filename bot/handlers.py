@@ -18,9 +18,9 @@ async def start_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
 
 async def help_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if update.message:
-        text_lines = [f'• /{command} — {description}' for command, description in COMMANDS.items()]
-        await update.message.reply_text('Вам доступны следующие команды:')
-        await update.message.reply_text('\n'.join(text_lines))
+        text_lines = [f"• /{command} — {description}" for command, description in COMMANDS.items()]
+        await update.message.reply_text("Вам доступны следующие команды:")
+        await update.message.reply_text("\n".join(text_lines))
 
 
 async def rm_last_expense_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -30,10 +30,10 @@ async def rm_last_expense_handler(update: Update, context: ContextTypes.DEFAULT_
             target_expense = current_profile.expenses[-1]
             target_expense_str = str(target_expense)
             target_expense.delete()
-            await update.message.reply_text('Удален расход со следующими параметрами:')
+            await update.message.reply_text("Удален расход со следующими параметрами:")
             await update.message.reply_text(target_expense_str)
         else:
-            await update.message.reply_text('Расходы не найдены \U0001F937')
+            await update.message.reply_text("Расходы не найдены \U0001F937")
 
 
 async def incomes_report_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:

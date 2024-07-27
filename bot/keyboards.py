@@ -20,14 +20,14 @@ def create_user_categories_keyboard(
             keyboard_line = []
     keyboard.append(keyboard_line)
     if add_none_button:
-        keyboard.append([InlineKeyboardButton('Без категории', callback_data='None')])
+        keyboard.append([InlineKeyboardButton("Без категории", callback_data="None")])
     return InlineKeyboardMarkup(keyboard)
 
 
 def create_yes_or_no_keyboard() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup([[
-        InlineKeyboardButton('Да', callback_data='yes'),
-        InlineKeyboardButton('Нет', callback_data='no'),
+        InlineKeyboardButton("Да", callback_data="yes"),
+        InlineKeyboardButton("Нет", callback_data="no"),
     ]])
 
 
@@ -40,7 +40,7 @@ def create_utc_regions_keyboard() -> InlineKeyboardMarkup:
 def create_utc_offsets_keyboard(offsets: list[int]) -> InlineKeyboardMarkup:
     buttons = []
     for offset in offsets:
-        label = (datetime.utcnow() + timedelta(hours=offset)).strftime('%d-%m-%Y %H:%M')
+        label = (datetime.utcnow() + timedelta(hours=offset)).strftime("%d-%m-%Y %H:%M")
         button = InlineKeyboardButton(label, callback_data=str(offset))
         buttons.append(button)
     return InlineKeyboardMarkup([buttons[index:index + 3] for index in range(0, len(buttons), 3)])

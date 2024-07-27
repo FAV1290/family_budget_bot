@@ -10,8 +10,8 @@ from db.mixins import FetchByIDMixin, CreateMixin, SelfDeleteMixin, CurrentPerio
 
 
 @pytest.mark.parametrize(
-    'method_name',
-    ['fetch_by_id', 'create', 'delete', 'fetch_current_period_objects'],
+    "method_name",
+    ["fetch_by_id", "create", "delete", "fetch_current_period_objects"],
 )
 def test__models__dont_have_mixin_methods_in_initial_state(test_model, method_name: str) -> None:
     model = test_model()
@@ -43,7 +43,7 @@ def test__create_mixin__creates_objects(test_model) -> None:
 def test__create_mixin__raises_type_error_for_unnecessary_kwargs_passed(test_model) -> None:
     model = test_model(mixins=[CreateMixin])
     with pytest.raises(TypeError):
-        model.create(odd_attribute='Something')
+        model.create(odd_attribute="Something")
 
 
 def test__self_delete_mixin__deletes_objects(test_model):
@@ -63,7 +63,7 @@ def test__self_delete_mixin__raises_exception_for_not_persisted_instance_delete_
         new_object.delete()
 
 
-@freeze_time('2024-01-01')
+@freeze_time("2024-01-01")
 def test__current_period_user_objects_mixin__finds_current_objects_among_others(test_model) -> None:
     model = test_model(mixins=[CurrentPeriodUserObjectsMixin])
     current_period_objects = [model() for _ in range(3)]
@@ -77,7 +77,7 @@ def test__current_period_user_objects_mixin__finds_current_objects_among_others(
         user_id=1, user_utc_offset=0)) == set(current_period_objects)
 
 
-@freeze_time('2024-01-01')
+@freeze_time("2024-01-01")
 def test__current_period_user_objects_mixin__returns_blank_list_in_absense_of_current_objects(
     test_model,
 ) -> None:
