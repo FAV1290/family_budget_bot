@@ -50,6 +50,6 @@ class CurrentPeriodUserObjectsMixin:
         current_month, current_year = user_now.month, user_now.year
         return cls.session.execute(select(cls).where(
             cls.profile_id == user_id,
-            extract('month', cls.created_at) == current_month,
-            extract('year', cls.created_at) == current_year,
+            extract("month", cls.created_at) == current_month,
+            extract("year", cls.created_at) == current_year,
         )).scalars().all()
